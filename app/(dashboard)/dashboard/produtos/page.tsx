@@ -342,11 +342,30 @@ export default function ProdutosPage() {
                 </CardHeader>
                 <CardContent>
                     {isLoading ? (
-                        <div className="space-y-2">
-                            {[1, 2, 3].map((i) => (
-                                <Skeleton key={i} className="h-12 w-full" />
-                            ))}
-                        </div>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Produto</TableHead>
+                                    <TableHead>Categoria</TableHead>
+                                    <TableHead className="text-right">Preço</TableHead>
+                                    <TableHead className="text-center">Estoque</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Ações</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell><Skeleton className="h-4 w-[180px]" /></TableCell>
+                                        <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                        <TableCell className="text-right flex justify-end"><Skeleton className="h-4 w-[80px]" /></TableCell>
+                                        <TableCell className="text-center flex justify-center"><Skeleton className="h-4 w-[60px]" /></TableCell>
+                                        <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
+                                        <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
                     ) : (
                         <Table>
                             <TableHeader>

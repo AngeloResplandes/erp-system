@@ -10,7 +10,7 @@ const JWT_SECRET = new TextEncoder().encode(
 const publicRoutes = ['/', '/login', '/register'];
 
 // API routes that don't require authentication
-const publicApiRoutes = ['/api/auth/login', '/api/auth/register'];
+const publicApiRoutes = ['/api/auth/login', '/api/auth/register', '/api/health', '/api/dashboard', '/api/relatorios'];
 
 export default async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { ModeToggle } from '@/components/mode-toggle';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Building2,
@@ -10,6 +11,7 @@ import {
   BarChart3,
   ArrowRight,
   CheckCircle,
+  Truck,
 } from 'lucide-react';
 
 const features = [
@@ -38,6 +40,11 @@ const features = [
     description: 'Análise completa com gráficos interativos',
     icon: BarChart3,
   },
+  {
+    title: 'Fornecedores',
+    description: 'Gerencie seus fornecedores e pedidos de compra',
+    icon: Truck,
+  },
 ];
 
 const technologies = [
@@ -53,7 +60,12 @@ const technologies = [
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
+    <div className="min-h-screen bg-linear-to-br from-background via-background to-muted">
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4">
+        <ModeToggle />
+      </div>
+
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -77,12 +89,12 @@ export default function Home() {
 
           <div className="flex gap-4 justify-center">
             <Link href="/login">
-              <Button size="lg" className="gap-2">
-                Acessar Sistema <ArrowRight className="h-4 w-4" />
+              <Button size="lg" className="gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-primary/25 cursor-pointer">
+                Acessar Sistema <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
             <Link href="/register">
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outline" className="transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-primary/10 cursor-pointer">
                 Criar Conta
               </Button>
             </Link>
@@ -92,10 +104,13 @@ export default function Home() {
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {features.map((feature) => (
-            <Card key={feature.title} className="bg-card/50 backdrop-blur">
+            <Card
+              key={feature.title}
+              className="bg-card/50 backdrop-blur transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10 hover:border-primary/50 group"
+            >
               <CardHeader>
-                <feature.icon className="h-10 w-10 text-primary mb-2" />
-                <CardTitle>{feature.title}</CardTitle>
+                <feature.icon className="h-10 w-10 text-primary mb-2 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3" />
+                <CardTitle className="transition-colors duration-300 group-hover:text-primary">{feature.title}</CardTitle>
                 <CardDescription>{feature.description}</CardDescription>
               </CardHeader>
             </Card>
@@ -103,7 +118,7 @@ export default function Home() {
         </div>
 
         {/* Tech Stack */}
-        <Card className="max-w-2xl mx-auto">
+        <Card className="max-w-2xl mx-auto transition-all duration-300 hover:shadow-xl hover:shadow-primary/10">
           <CardHeader className="text-center">
             <CardTitle>Stack Tecnológica</CardTitle>
             <CardDescription>
@@ -115,7 +130,7 @@ export default function Home() {
               {technologies.map((tech) => (
                 <div
                   key={tech}
-                  className="flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full text-sm"
+                  className="flex items-center gap-1 bg-primary/10 px-3 py-1 rounded-full text-sm transition-all duration-300 hover:bg-primary/20 hover:scale-105 hover:shadow-md"
                 >
                   <CheckCircle className="h-3 w-3 text-primary" />
                   {tech}

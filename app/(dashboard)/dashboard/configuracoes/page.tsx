@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/auth-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,18 +8,57 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Settings, User, Building2, Database, Moon, Sun } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Settings, User, Building2, Database, Moon, Sun, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
+type DbStatus = 'loading' | 'connected' | 'error';
+
 export default function ConfiguracoesPage() {
-    const { user } = useAuth();
+    const { user, isLoading } = useAuth();
     const [darkMode, setDarkMode] = useState(false);
+    const [dbStatus, setDbStatus] = useState<DbStatus>('loading');
+    const [isCheckingDb, setIsCheckingDb] = useState(false);
+
+    const checkDatabaseConnection = async () => {
+        setIsCheckingDb(true);
+        try {
+            const response = await fetch('/api/health');
+            const data = await response.json();
+            setDbStatus(data.status === 'connected' ? 'connected' : 'error');
+        } catch {
+            setDbStatus('error');
+        } finally {
+            setIsCheckingDb(false);
+        }
+    };
+
+    useEffect(() => {
+        checkDatabaseConnection();
+    }, []);
 
     const toggleDarkMode = () => {
         setDarkMode(!darkMode);
         document.documentElement.classList.toggle('dark');
         toast.success(darkMode ? 'Modo claro ativado' : 'Modo escuro ativado');
     };
+
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+                <div>
+                    <Skeleton className="h-8 w-48 mb-2" />
+                    <Skeleton className="h-4 w-64" />
+                </div>
+                <div className="grid gap-6 md:grid-cols-2">
+                    <Skeleton className="h-[300px]" />
+                    <Skeleton className="h-[300px]" />
+                    <Skeleton className="h-[150px]" />
+                    <Skeleton className="h-[200px]" />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -46,11 +85,11 @@ export default function ConfiguracoesPage() {
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label>Nome</Label>
-                            <Input value={user?.nome || ''} disabled />
+                            <Input value={user?.nome ?? ''} disabled />
                         </div>
                         <div className="space-y-2">
                             <Label>Email</Label>
-                            <Input value={user?.email || ''} disabled />
+                            <Input value={user?.email ?? ''} disabled />
                         </div>
                         <div className="space-y-2">
                             <Label>Função</Label>
@@ -80,20 +119,20 @@ export default function ConfiguracoesPage() {
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label>Nome da Empresa</Label>
-                            <Input placeholder="Sua Empresa LTDA" />
+                            <Input value="Empresa Demonstração LTDA" disabled />
                         </div>
                         <div className="space-y-2">
                             <Label>CNPJ</Label>
-                            <Input placeholder="00.000.000/0000-00" />
+                            <Input value="12.345.678/0001-90" disabled />
                         </div>
                         <div className="space-y-2">
                             <Label>Telefone</Label>
-                            <Input placeholder="(00) 0000-0000" />
+                            <Input value="(11) 3456-7890" disabled />
                         </div>
                         <Separator />
-                        <Button className="w-full" onClick={() => toast.success('Configurações salvas!')}>
-                            Salvar Alterações
-                        </Button>
+                        <p className="text-xs text-muted-foreground text-center">
+                            Configurações da empresa são gerenciadas pelo administrador do sistema
+                        </p>
                     </CardContent>
                 </Card>
 
@@ -139,9 +178,28 @@ export default function ConfiguracoesPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="grid gap-3 text-sm">
-                            <div className="flex justify-between">
+                            <div className="flex justify-between items-center">
                                 <span className="text-muted-foreground">Status</span>
-                                <Badge className="bg-yellow-500">Aguardando configuração</Badge>
+                                <div className="flex items-center gap-2">
+                                    {dbStatus === 'loading' && (
+                                        <Badge variant="outline">Verificando...</Badge>
+                                    )}
+                                    {dbStatus === 'connected' && (
+                                        <Badge className="bg-green-500">Conectado</Badge>
+                                    )}
+                                    {dbStatus === 'error' && (
+                                        <Badge className="bg-red-500">Erro de conexão</Badge>
+                                    )}
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6"
+                                        onClick={checkDatabaseConnection}
+                                        disabled={isCheckingDb}
+                                    >
+                                        <RefreshCw className={`h-3 w-3 ${isCheckingDb ? 'animate-spin' : ''}`} />
+                                    </Button>
+                                </div>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-muted-foreground">Tipo</span>
@@ -151,15 +209,10 @@ export default function ConfiguracoesPage() {
                                 <span className="text-muted-foreground">ORM</span>
                                 <span>Drizzle ORM</span>
                             </div>
-                        </div>
-                        <Separator />
-                        <div className="space-y-2">
-                            <p className="text-sm text-muted-foreground">
-                                Para usar o ERP completamente, configure as variáveis de ambiente:
-                            </p>
-                            <code className="block p-2 bg-muted rounded text-xs">
-                                DATABASE_URL="postgresql://..."
-                            </code>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">Host</span>
+                                <span>localhost:5432</span>
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

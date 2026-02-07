@@ -244,12 +244,12 @@ export default function FinanceiroPage() {
 
             {/* Summary Cards */}
             <div className="grid gap-4 md:grid-cols-3">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Card className="gap-2 py-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
                         <CardTitle className="text-sm font-medium">A Pagar</CardTitle>
                         <TrendingDown className="h-4 w-4 text-red-500" />
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                         <div className="text-2xl font-bold text-red-500">
                             {formatCurrency(totalPagar.toString())}
                         </div>
@@ -258,12 +258,12 @@ export default function FinanceiroPage() {
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Card className="gap-2 py-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
                         <CardTitle className="text-sm font-medium">A Receber</CardTitle>
                         <TrendingUp className="h-4 w-4 text-green-500" />
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                         <div className="text-2xl font-bold text-green-500">
                             {formatCurrency(totalReceber.toString())}
                         </div>
@@ -272,12 +272,12 @@ export default function FinanceiroPage() {
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Card className="gap-2 py-4">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
                         <CardTitle className="text-sm font-medium">Saldo Previsto</CardTitle>
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="pt-0">
                         <div className={`text-2xl font-bold ${totalReceber - totalPagar >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {formatCurrency((totalReceber - totalPagar).toString())}
                         </div>
@@ -384,9 +384,30 @@ export default function FinanceiroPage() {
                         </CardHeader>
                         <CardContent>
                             {loadingPagar ? (
-                                <div className="space-y-2">
-                                    {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 w-full" />)}
-                                </div>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Descrição</TableHead>
+                                            <TableHead>Fornecedor</TableHead>
+                                            <TableHead>Vencimento</TableHead>
+                                            <TableHead className="text-right">Valor</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">Ações</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <TableRow key={i}>
+                                                <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
+                                                <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
+                                                <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                                                <TableCell className="text-right flex justify-end"><Skeleton className="h-4 w-[80px]" /></TableCell>
+                                                <TableCell><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
+                                                <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             ) : (
                                 <Table>
                                     <TableHeader>
@@ -455,9 +476,30 @@ export default function FinanceiroPage() {
                         </CardHeader>
                         <CardContent>
                             {loadingReceber ? (
-                                <div className="space-y-2">
-                                    {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 w-full" />)}
-                                </div>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Cliente</TableHead>
+                                            <TableHead>Venda</TableHead>
+                                            <TableHead>Vencimento</TableHead>
+                                            <TableHead className="text-right">Valor</TableHead>
+                                            <TableHead>Status</TableHead>
+                                            <TableHead className="text-right">Ações</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <TableRow key={i}>
+                                                <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
+                                                <TableCell><Skeleton className="h-4 w-[60px]" /></TableCell>
+                                                <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                                                <TableCell className="text-right flex justify-end"><Skeleton className="h-4 w-[80px]" /></TableCell>
+                                                <TableCell><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
+                                                <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
                             ) : (
                                 <Table>
                                     <TableHeader>

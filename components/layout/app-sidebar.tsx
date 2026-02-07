@@ -101,17 +101,22 @@ function AppSidebarContent() {
                 </div>
             </SidebarHeader>
 
-            <SidebarContent>
+            <SidebarContent className="gap-0">
                 {menuItems.map((group) => (
-                    <SidebarGroup key={group.title}>
-                        <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
+                    <SidebarGroup key={group.title} className="py-1 gap-0">
+                        <SidebarGroupLabel className="h-6 text-xs">{group.title}</SidebarGroupLabel>
                         <SidebarGroupContent>
-                            <SidebarMenu>
+                            <SidebarMenu className="gap-0">
                                 {group.items.map((item) => (
                                     <SidebarMenuItem key={item.title}>
                                         <SidebarMenuButton
                                             asChild
-                                            isActive={pathname === item.url || pathname.startsWith(item.url + '/')}
+                                            isActive={
+                                                item.url === '/dashboard'
+                                                    ? pathname === '/dashboard'
+                                                    : pathname === item.url || pathname.startsWith(item.url + '/')
+                                            }
+                                            className="h-8"
                                         >
                                             <Link href={item.url}>
                                                 <item.icon className="h-4 w-4" />
@@ -174,6 +179,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             <main className="flex-1 flex flex-col min-h-screen">
                 <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
                     <SidebarTrigger />
+                    <div className="ml-auto text-sm font-semibold text-muted-foreground">
+                        Empresa Demonstração LTDA
+                    </div>
                 </header>
                 <div className="flex-1 p-4 lg:p-6">
                     {children}
