@@ -16,6 +16,7 @@ import {
     SidebarMenuItem,
     SidebarProvider,
     SidebarTrigger,
+    useSidebar,
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -80,6 +81,8 @@ function AppSidebarContent() {
     const pathname = usePathname();
     const { user, logout } = useAuth();
 
+    const { isMobile, setOpenMobile } = useSidebar();
+
     const getInitials = (name: string) => {
         return name
             .split(' ')
@@ -87,6 +90,12 @@ function AppSidebarContent() {
             .join('')
             .toUpperCase()
             .slice(0, 2);
+    };
+
+    const handleLinkClick = () => {
+        if (isMobile) {
+            setOpenMobile(false);
+        }
     };
 
     return (
@@ -118,7 +127,7 @@ function AppSidebarContent() {
                                             }
                                             className="h-8"
                                         >
-                                            <Link href={item.url}>
+                                            <Link href={item.url} onClick={handleLinkClick}>
                                                 <item.icon className="h-4 w-4" />
                                                 <span>{item.title}</span>
                                             </Link>

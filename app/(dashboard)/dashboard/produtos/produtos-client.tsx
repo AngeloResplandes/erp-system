@@ -199,9 +199,9 @@ export default function ProdutosClientPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-2">
                         <Package className="h-8 w-8" /> Produtos
                     </h1>
                     <p className="text-muted-foreground">
@@ -210,7 +210,7 @@ export default function ProdutosClientPage() {
                 </div>
                 <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) resetForm(); }}>
                     <DialogTrigger asChild>
-                        <Button>
+                        <Button className="w-full sm:w-auto">
                             <Plus className="mr-2 h-4 w-4" /> Novo Produto
                         </Button>
                     </DialogTrigger>
@@ -346,9 +346,9 @@ export default function ProdutosClientPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Produto</TableHead>
-                                    <TableHead>Categoria</TableHead>
-                                    <TableHead className="text-right">Preço</TableHead>
-                                    <TableHead className="text-center">Estoque</TableHead>
+                                    <TableHead className="hidden md:table-cell">Categoria</TableHead>
+                                    <TableHead className="text-right hidden sm:table-cell">Preço</TableHead>
+                                    <TableHead className="text-center hidden sm:table-cell">Estoque</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Ações</TableHead>
                                 </TableRow>
@@ -356,10 +356,10 @@ export default function ProdutosClientPage() {
                             <TableBody>
                                 {Array.from({ length: 5 }).map((_, i) => (
                                     <TableRow key={i}>
-                                        <TableCell><Skeleton className="h-4 w-[180px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                        <TableCell className="text-right flex justify-end"><Skeleton className="h-4 w-[80px]" /></TableCell>
-                                        <TableCell className="text-center flex justify-center"><Skeleton className="h-4 w-[60px]" /></TableCell>
+                                        <TableCell className="max-w-[150px] sm:max-w-none"><Skeleton className="h-4 w-[180px]" /></TableCell>
+                                        <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                        <TableCell className="text-right hidden sm:flex justify-end"><Skeleton className="h-4 w-[80px]" /></TableCell>
+                                        <TableCell className="text-center justify-center hidden sm:flex"><Skeleton className="h-4 w-[60px]" /></TableCell>
                                         <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
                                         <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                     </TableRow>
@@ -371,9 +371,9 @@ export default function ProdutosClientPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Produto</TableHead>
-                                    <TableHead>Categoria</TableHead>
-                                    <TableHead className="text-right">Preço</TableHead>
-                                    <TableHead className="text-center">Estoque</TableHead>
+                                    <TableHead className="hidden md:table-cell">Categoria</TableHead>
+                                    <TableHead className="text-right hidden sm:table-cell">Preço</TableHead>
+                                    <TableHead className="text-center hidden sm:table-cell">Estoque</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Ações</TableHead>
                                 </TableRow>
@@ -388,12 +388,12 @@ export default function ProdutosClientPage() {
                                 ) : (
                                     data?.data?.map((produto: Produto) => (
                                         <TableRow key={produto.id}>
-                                            <TableCell className="font-medium">{produto.nome}</TableCell>
-                                            <TableCell>{produto.categoria?.nome || '-'}</TableCell>
-                                            <TableCell className="text-right">
+                                            <TableCell className="font-medium max-w-[150px] sm:max-w-none truncate" title={produto.nome}>{produto.nome}</TableCell>
+                                            <TableCell className="hidden md:table-cell">{produto.categoria?.nome || '-'}</TableCell>
+                                            <TableCell className="text-right hidden sm:table-cell">
                                                 {formatCurrency(produto.precoVenda)}
                                             </TableCell>
-                                            <TableCell className="text-center">
+                                            <TableCell className="text-center hidden sm:table-cell">
                                                 <div className="flex items-center justify-center gap-1">
                                                     {produto.estoqueAtual <= produto.estoqueMinimo && (
                                                         <AlertTriangle className="h-4 w-4 text-yellow-500" />

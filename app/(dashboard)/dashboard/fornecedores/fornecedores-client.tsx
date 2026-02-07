@@ -153,9 +153,9 @@ export default function FornecedoresClientPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-2">
                         <Truck className="h-8 w-8" /> Fornecedores
                     </h1>
                     <p className="text-muted-foreground">
@@ -164,7 +164,7 @@ export default function FornecedoresClientPage() {
                 </div>
                 <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) resetForm(); }}>
                     <DialogTrigger asChild>
-                        <Button>
+                        <Button className="w-full sm:w-auto">
                             <Plus className="mr-2 h-4 w-4" /> Novo Fornecedor
                         </Button>
                     </DialogTrigger>
@@ -257,9 +257,9 @@ export default function FornecedoresClientPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Nome</TableHead>
-                                    <TableHead>CNPJ</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>Telefone</TableHead>
+                                    <TableHead className="hidden lg:table-cell">CNPJ</TableHead>
+                                    <TableHead className="hidden md:table-cell">Email</TableHead>
+                                    <TableHead className="hidden sm:table-cell">Telefone</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Ações</TableHead>
                                 </TableRow>
@@ -268,9 +268,9 @@ export default function FornecedoresClientPage() {
                                 {Array.from({ length: 5 }).map((_, i) => (
                                     <TableRow key={i}>
                                         <TableCell><Skeleton className="h-4 w-[180px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-4 w-[140px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-4 w-[180px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                        <TableCell className="hidden lg:table-cell"><Skeleton className="h-4 w-[140px]" /></TableCell>
+                                        <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[180px]" /></TableCell>
+                                        <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
                                         <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
                                         <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                     </TableRow>
@@ -282,9 +282,9 @@ export default function FornecedoresClientPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Nome</TableHead>
-                                    <TableHead>CNPJ</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>Telefone</TableHead>
+                                    <TableHead className="hidden lg:table-cell">CNPJ</TableHead>
+                                    <TableHead className="hidden md:table-cell">Email</TableHead>
+                                    <TableHead className="hidden sm:table-cell">Telefone</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Ações</TableHead>
                                 </TableRow>
@@ -300,9 +300,9 @@ export default function FornecedoresClientPage() {
                                     data?.data?.map((fornecedor: Fornecedor) => (
                                         <TableRow key={fornecedor.id}>
                                             <TableCell className="font-medium">{fornecedor.nome}</TableCell>
-                                            <TableCell>{fornecedor.cnpj || '-'}</TableCell>
-                                            <TableCell>{fornecedor.email || '-'}</TableCell>
-                                            <TableCell>{fornecedor.telefone || '-'}</TableCell>
+                                            <TableCell className="hidden lg:table-cell">{fornecedor.cnpj || '-'}</TableCell>
+                                            <TableCell className="hidden md:table-cell">{fornecedor.email || '-'}</TableCell>
+                                            <TableCell className="hidden sm:table-cell">{fornecedor.telefone || '-'}</TableCell>
                                             <TableCell>
                                                 <Badge variant={fornecedor.ativo ? 'default' : 'secondary'}>
                                                     {fornecedor.ativo ? 'Ativo' : 'Inativo'}

@@ -163,9 +163,9 @@ export default function ClientesClientPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-2">
                         <Users className="h-8 w-8" /> Clientes
                     </h1>
                     <p className="text-muted-foreground">
@@ -174,7 +174,7 @@ export default function ClientesClientPage() {
                 </div>
                 <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if (!open) resetForm(); }}>
                     <DialogTrigger asChild>
-                        <Button>
+                        <Button className="w-full sm:w-auto">
                             <Plus className="mr-2 h-4 w-4" /> Novo Cliente
                         </Button>
                     </DialogTrigger>
@@ -294,9 +294,9 @@ export default function ClientesClientPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Nome</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>Telefone</TableHead>
-                                    <TableHead>Cidade/UF</TableHead>
+                                    <TableHead className="hidden md:table-cell">Email</TableHead>
+                                    <TableHead className="hidden lg:table-cell">Telefone</TableHead>
+                                    <TableHead className="hidden md:table-cell">Cidade/UF</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Ações</TableHead>
                                 </TableRow>
@@ -305,9 +305,9 @@ export default function ClientesClientPage() {
                                 {Array.from({ length: 5 }).map((_, i) => (
                                     <TableRow key={i}>
                                         <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                                        <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[200px]" /></TableCell>
+                                        <TableCell className="hidden lg:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                        <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
                                         <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
                                         <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                     </TableRow>
@@ -319,9 +319,9 @@ export default function ClientesClientPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Nome</TableHead>
-                                    <TableHead>Email</TableHead>
-                                    <TableHead>Telefone</TableHead>
-                                    <TableHead>Cidade/UF</TableHead>
+                                    <TableHead className="hidden md:table-cell">Email</TableHead>
+                                    <TableHead className="hidden lg:table-cell">Telefone</TableHead>
+                                    <TableHead className="hidden md:table-cell">Cidade/UF</TableHead>
                                     <TableHead>Status</TableHead>
                                     <TableHead className="text-right">Ações</TableHead>
                                 </TableRow>
@@ -337,9 +337,9 @@ export default function ClientesClientPage() {
                                     data?.data?.map((cliente: Cliente) => (
                                         <TableRow key={cliente.id}>
                                             <TableCell className="font-medium">{cliente.nome}</TableCell>
-                                            <TableCell>{cliente.email || '-'}</TableCell>
-                                            <TableCell>{cliente.telefone || '-'}</TableCell>
-                                            <TableCell>
+                                            <TableCell className="hidden md:table-cell">{cliente.email || '-'}</TableCell>
+                                            <TableCell className="hidden lg:table-cell">{cliente.telefone || '-'}</TableCell>
+                                            <TableCell className="hidden md:table-cell">
                                                 {cliente.cidade && cliente.estado
                                                     ? `${cliente.cidade}/${cliente.estado}`
                                                     : '-'}

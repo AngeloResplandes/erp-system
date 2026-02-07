@@ -8,15 +8,11 @@ import { Progress } from '@/components/ui/progress';
 import {
     Users,
     Package,
-    ShoppingCart,
     DollarSign,
-    TrendingUp,
-    TrendingDown,
     AlertTriangle,
     CheckCircle,
     Building2,
     Calendar,
-    Receipt,
     CreditCard,
     Target,
     BarChart3,
@@ -144,7 +140,7 @@ export default function DashboardClientPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight">
+                <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
                     Olá, {user?.nome?.split(' ')[0]}! 👋
                 </h1>
                 <p className="text-muted-foreground">
@@ -250,113 +246,7 @@ export default function DashboardClientPage() {
                 </Card>
             </div>
 
-            {/* Cards de vendas e financeiro */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {/* Card Vendas do Mês */}
-                <Card className="gap-2 py-4">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-                        <CardTitle className="text-sm font-medium">Vendas do Mês</CardTitle>
-                        <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                        {loadingStats ? (
-                            <Skeleton className="h-8 w-32" />
-                        ) : (
-                            <>
-                                <div className="text-2xl font-bold text-green-500">
-                                    {formatCurrency(stats?.vendasMes.total || 0)}
-                                </div>
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    {(stats?.vendasMes.variacao || 0) >= 0 ? (
-                                        <TrendingUp className="h-3 w-3 text-green-500" />
-                                    ) : (
-                                        <TrendingDown className="h-3 w-3 text-red-500" />
-                                    )}
-                                    {stats?.vendasMes.quantidade || 0} vendas
-                                    {(stats?.vendasMes.mesAnterior || 0) > 0 && (
-                                        <span className={stats?.vendasMes.variacao && stats.vendasMes.variacao >= 0 ? 'text-green-500' : 'text-red-500'}>
-                                            ({stats?.vendasMes.variacao?.toFixed(1)}%)
-                                        </span>
-                                    )}
-                                </p>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
 
-                {/* Card Total Vendas */}
-                <Card className="gap-2 py-4">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-                        <CardTitle className="text-sm font-medium">Total Vendas</CardTitle>
-                        <Receipt className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                        {loadingStats ? (
-                            <Skeleton className="h-8 w-32" />
-                        ) : (
-                            <>
-                                <div className="text-2xl font-bold">
-                                    {formatCurrency(stats?.vendasGeral.total || 0)}
-                                </div>
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <ShoppingCart className="h-3 w-3 text-blue-500" />
-                                    {stats?.vendasGeral.quantidade || 0} vendas realizadas
-                                </p>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Card Saldo */}
-                <Card className="gap-2 py-4">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-                        <CardTitle className="text-sm font-medium">Saldo</CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                        {loadingStats ? (
-                            <Skeleton className="h-8 w-32" />
-                        ) : (
-                            <>
-                                <div className={`text-2xl font-bold ${(stats?.financeiro.saldo || 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                    {formatCurrency(stats?.financeiro.saldo || 0)}
-                                </div>
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    {(stats?.financeiro.saldo || 0) >= 0 ? (
-                                        <TrendingUp className="h-3 w-3 text-green-500" />
-                                    ) : (
-                                        <TrendingDown className="h-3 w-3 text-red-500" />
-                                    )}
-                                    A pagar: {formatCurrency(stats?.financeiro.contasPagar || 0)}
-                                </p>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Card Contas a Vencer */}
-                <Card className="gap-2 py-4">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
-                        <CardTitle className="text-sm font-medium">Próximos 7 dias</CardTitle>
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                        {loadingStats ? (
-                            <Skeleton className="h-8 w-32" />
-                        ) : (
-                            <>
-                                <div className="text-2xl font-bold text-orange-500">
-                                    {formatCurrency(stats?.financeiro.valorContasAVencer7Dias || 0)}
-                                </div>
-                                <p className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <AlertTriangle className="h-3 w-3 text-orange-500" />
-                                    {stats?.financeiro.contasAVencer7Dias || 0} contas a pagar
-                                </p>
-                            </>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
 
             {/* Segunda linha de cards detalhados */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
