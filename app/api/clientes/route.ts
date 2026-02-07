@@ -14,6 +14,7 @@ export async function GET(request: Request) {
         const offset = (page - 1) * limit;
 
         const data = await db.query.clientes.findMany({
+            where: search ? or(ilike(clientes.nome, `%${search}%`), ilike(clientes.email, `%${search}%`)) : undefined,
             orderBy: desc(clientes.criadoEm),
             limit,
             offset,

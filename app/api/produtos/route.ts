@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { produtos, categorias } from '@/db/schema';
-import { desc } from 'drizzle-orm';
+import { desc, ilike } from 'drizzle-orm';
 import { produtoSchema } from '@/lib/validations';
 
 // GET - List all products with optional search
@@ -15,6 +15,7 @@ export async function GET(request: Request) {
         const offset = (page - 1) * limit;
 
         const data = await db.query.produtos.findMany({
+            where: search ? ilike(produtos.nome, `%${search}%`) : undefined,
             with: { categoria: true },
             orderBy: desc(produtos.criadoEm),
             limit,

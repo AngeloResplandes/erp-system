@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { config } from 'dotenv';
 
 // Carregar variáveis do .env.local
-config({ path: '.env.local' });
+config({ path: '.env' });
 
 import { db } from './index';
 import {
