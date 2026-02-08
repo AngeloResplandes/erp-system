@@ -1,126 +1,391 @@
-# ERP Project
+# 🏢 ERP System
 
-Um sistema completo de Planejamento de Recursos Empresariais (ERP) desenvolvido com tecnologias modernas para gestão eficiente de vendas, estoque, financeiro e relacionamento com clientes.
+Sistema de Gestão Empresarial completo desenvolvido com as tecnologias mais modernas do mercado. Uma solução full-stack para gerenciar clientes, produtos, vendas, fornecedores e finanças do seu negócio.
 
-![Status do Projeto](https://img.shields.io/badge/status-em_desenvolvimento-orange)
-![Next.js](https://img.shields.io/badge/Next.js-16.1-black)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
-![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.31-C5F74F)
+![Next.js](https://img.shields.io/badge/Next.js-16.1.6-black?style=flat-square&logo=next.js)
+![React](https://img.shields.io/badge/React-19.2.3-61DAFB?style=flat-square&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql)
+![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.45-C5F74F?style=flat-square)
 
-## 🚀 Tecnologias Utilizadas
+## 📋 Índice
 
-Este projeto utiliza uma stack moderna e robusta focada em performance e experiência do desenvolvedor:
+- [Funcionalidades](#-funcionalidades)
+- [Stack Tecnológica](#-stack-tecnológica)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Pré-requisitos](#-pré-requisitos)
+- [Instalação](#-instalação)
+- [Configuração do Banco de Dados](#-configuração-do-banco-de-dados)
+- [Executando o Projeto](#-executando-o-projeto)
+- [Modelo de Dados](#-modelo-de-dados)
+- [APIs Disponíveis](#-apis-disponíveis)
+- [Autenticação](#-autenticação)
+- [Screenshots](#-screenshots)
 
-- **Frontend & Framework:** [Next.js 16](https://nextjs.org/) (App Router) e [React 19](https://react.dev/).
-- **Estilização:** [Tailwind CSS v4](https://tailwindcss.com/) com [Shadcn/ui](https://ui.shadcn.com/) para componentes acessíveis.
-- **Banco de Dados & ORM:** [PostgreSQL](https://www.postgresql.org/) com [Drizzle ORM](https://orm.drizzle.team/) para tipagem segura e queries eficientes.
-- **Autenticação:** Implementação customizada com `jose` (JWT) e `bcryptjs`.
-- **Formulários & Validação:** [React Hook Form](https://react-hook-form.com/) e [Zod](https://zod.dev/).
-- **Visualização de Dados:** [Recharts](https://recharts.org/) para gráficos e dashboards.
-- **Gerenciamento de Estado/Cache:** [TanStack Query](https://tanstack.com/query/latest).
-- **Manipulação de Datas:** [date-fns](https://date-fns.org/).
+## ✨ Funcionalidades
 
-## ✨ Funcionalidades Principais
+### 📊 Dashboard
+- Visão geral com estatísticas do negócio
+- Resumo de clientes, produtos e vendas
+- Alertas de estoque baixo
+- Gráficos interativos de vendas
+- Vendas recentes e produtos mais vendidos
+- Resumo financeiro (contas a pagar/receber)
 
-O sistema está dividido em módulos integrados para cobrir as principais áreas de gestão:
+### 👥 Gestão de Clientes
+- Cadastro completo de clientes (nome, email, telefone, CPF/CNPJ)
+- Endereço completo (cidade, estado, CEP)
+- Listagem com busca e filtros
+- Edição e desativação de clientes
 
-### 📦 Gestão de Estoque e Produtos
-- Cadastro completo de produtos com categorização.
-- Controle de estoque atual e estoque mínimo.
-- Gestão de preços de custo e venda.
-- Código de barras.
+### 📦 Controle de Produtos
+- Cadastro de produtos com categorias
+- Preço de custo e preço de venda
+- Controle de estoque com alertas de estoque mínimo
+- Suporte a código de barras
+- Gerenciamento de categorias
 
-### 💰 Gestão Financeira
-- **Contas a Pagar:** Controle de despesas e pagamentos a fornecedores.
-- **Contas a Receber:** Rastreamento de receitas vindas das vendas.
-- Status financeiros claros (Pendente, Pago, Atrasado, Cancelado).
+### 🛒 PDV (Ponto de Venda)
+- Interface moderna para vendas
+- Busca de produtos em tempo real
+- Seleção de cliente
+- Múltiplas formas de pagamento (Dinheiro, PIX, Cartão Crédito/Débito, Boleto)
+- Aplicação de descontos
+- Histórico de vendas
 
-### 🛒 Vendas e PDV
-- Registro de vendas vinculado a clientes e vendedores.
-- Múltiplas formas de pagamento (Dinheiro, PIX, Cartão, Boleto).
-- Cálculo automático de subtotal, descontos e total.
-- Histórico de vendas.
+### 🚚 Fornecedores
+- Cadastro de fornecedores com CNPJ
+- Informações de contato
+- Gerenciamento de relacionamento
 
-### 🤝 CRM (Clientes e Fornecedores)
-- Cadastro detalhado de clientes (Pessoa Física/Jurídica) e fornecedores.
-- Histórico de compras e pagamentos por cliente.
+### 💰 Financeiro
+- **Contas a Pagar**: Gestão de despesas e pagamentos a fornecedores
+- **Contas a Receber**: Controle de recebimentos de clientes
+- Filtros por status (pendente, pago, atrasado, cancelado)
+- Alertas de vencimento
 
-### 🔐 Controle de Acesso
-- Sistema de usuários com permissões baseadas em cargos (Admin, Gerente, Vendedor).
+### 📈 Relatórios
+- Análise de vendas por período
+- Produtos mais vendidos
+- Performance por forma de pagamento
+- Gráficos interativos com Recharts
 
-## 📂 Estrutura do Projeto
+### 🎨 Interface
+- Design moderno e responsivo
+- Modo claro/escuro
+- Componentes Shadcn UI
+- Sidebar retrátil
+- Totalmente responsivo para mobile
 
-```bash
+## 🛠 Stack Tecnológica
+
+### Frontend
+| Tecnologia | Versão | Descrição |
+|------------|--------|-----------|
+| **Next.js** | 16.1.6 | Framework React com App Router |
+| **React** | 19.2.3 | Biblioteca UI |
+| **TypeScript** | 5.x | Tipagem estática |
+| **Tailwind CSS** | 4.x | Framework CSS utilitário |
+| **Shadcn UI** | 3.8.4 | Componentes UI acessíveis |
+| **Lucide React** | 0.563.0 | Biblioteca de ícones |
+| **Recharts** | 3.7.0 | Gráficos interativos |
+| **TanStack Query** | 5.90.20 | Gerenciamento de estado server-side |
+| **React Hook Form** | 7.71.1 | Formulários performáticos |
+| **Zod** | 4.3.6 | Validação de schemas |
+
+### Backend
+| Tecnologia | Versão | Descrição |
+|------------|--------|-----------|
+| **Next.js API Routes** | - | API RESTful integrada |
+| **Drizzle ORM** | 0.45.1 | ORM TypeScript-first |
+| **PostgreSQL** | 16 | Banco de dados relacional |
+| **Jose** | 6.1.3 | Biblioteca JWT |
+| **Bcrypt.js** | 3.0.3 | Hash de senhas |
+
+### DevOps
+| Tecnologia | Descrição |
+|------------|-----------|
+| **Docker** | Containerização do banco |
+| **ESLint** | Linting de código |
+| **Drizzle Kit** | Migrations e seeding |
+
+## 📁 Estrutura do Projeto
+
+```
 erp-project/
-├── app/
-│   ├── (auth)/       # Rotas de autenticação (login, cadastro)
-│   ├── (dashboard)/  # Área protegida do sistema (painéis, listagens)
-│   └── api/          # API Routes (se aplicável)
-├── components/       # Componentes de UI reutilizáveis
-├── db/               # Configuração do banco de dados e schema
-│   ├── schema.ts     # Definição das tabelas e relações
-│   └── seed.ts       # Script para popular o banco com dados iniciais
-├── lib/              # Funções utilitárias
-└── public/           # Arquivos estáticos
+├── app/                          # Next.js App Router
+│   ├── (auth)/                   # Grupo de rotas de autenticação
+│   │   ├── login/                # Página de login
+│   │   └── register/             # Página de registro
+│   ├── (dashboard)/              # Grupo de rotas do dashboard
+│   │   ├── layout.tsx            # Layout com sidebar
+│   │   └── dashboard/
+│   │       ├── clientes/         # Gestão de clientes
+│   │       ├── produtos/         # Gestão de produtos
+│   │       ├── fornecedores/     # Gestão de fornecedores
+│   │       ├── vendas/           # PDV e histórico
+│   │       ├── financeiro/       # Contas a pagar/receber
+│   │       ├── relatorios/       # Relatórios e gráficos
+│   │       └── configuracoes/    # Configurações do sistema
+│   ├── api/                      # API Routes
+│   │   ├── auth/                 # Endpoints de autenticação
+│   │   ├── clientes/             # CRUD de clientes
+│   │   ├── produtos/             # CRUD de produtos
+│   │   ├── categorias/           # CRUD de categorias
+│   │   ├── fornecedores/         # CRUD de fornecedores
+│   │   ├── vendas/               # CRUD de vendas
+│   │   ├── financeiro/           # Contas a pagar/receber
+│   │   └── dashboard/            # Estatísticas
+│   ├── layout.tsx                # Layout raiz
+│   └── page.tsx                  # Landing page
+├── components/
+│   ├── ui/                       # 24 componentes Shadcn UI
+│   │   ├── avatar.tsx
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── dialog.tsx
+│   │   ├── form.tsx
+│   │   ├── sidebar.tsx
+│   │   ├── table.tsx
+│   │   └── ...
+│   ├── layout/
+│   │   └── app-sidebar.tsx       # Sidebar principal
+│   ├── mode-toggle.tsx           # Toggle tema claro/escuro
+│   └── theme-provider.tsx        # Provider de tema
+├── contexts/
+│   ├── auth-context.tsx          # Contexto de autenticação
+│   └── query-provider.tsx        # Provider TanStack Query
+├── db/
+│   ├── index.ts                  # Conexão com banco
+│   ├── schema.ts                 # Schema Drizzle (8 tabelas)
+│   └── seed.ts                   # Dados de seed
+├── hooks/
+│   └── use-mobile.ts             # Hook detecção mobile
+├── lib/
+│   ├── auth.ts                   # Funções de autenticação JWT
+│   ├── utils.ts                  # Utilitários (cn)
+│   └── validations.ts            # Schemas Zod
+├── styles/
+│   └── globals.css               # Estilos globais + Tailwind
+├── docker-compose.yml            # Configuração Docker PostgreSQL
+├── drizzle.config.ts             # Configuração Drizzle Kit
+├── package.json
+├── tsconfig.json
+└── next.config.ts
 ```
 
-## 🛠️ Instalação e Execução
+## 📋 Pré-requisitos
 
-### Pré-requisitos
-- Node.js (v20 ou superior)
-- Banco de dados PostgreSQL rodando localmente ou na nuvem (recomenda-se Neon ou Docker).
+- **Node.js** >= 18.0.0
+- **npm** ou **bun**
+- **Docker** (para PostgreSQL) ou PostgreSQL instalado localmente
+- **Git**
 
-### Passo a Passo
+## 🚀 Instalação
 
-1. **Clone o repositório:**
-   ```bash
-   git clone https://github.com/seu-usuario/erp-project.git
-   cd erp-project
-   ```
+1. **Clone o repositório**
+```bash
+git clone https://github.com/seu-usuario/erp-project.git
+cd erp-project
+```
 
-2. **Instale as dependências:**
-   ```bash
-   npm install
-   # ou
-   bun install
-   ```
+2. **Instale as dependências**
+```bash
+npm install
+# ou
+bun install
+```
 
-3. **Configure as variáveis de ambiente:**
-   Crie um arquivo `.env` na raiz do projeto baseado no `.env.example` e adicione a URL do seu banco de dados:
-   ```env
-   DATABASE_URL="postgresql://user:password@host:port/database"
-   ```
+3. **Configure as variáveis de ambiente**
+```bash
+cp .env.example .env
+```
 
-4. **Prepare o Banco de Dados:**
-   Gere as migrações e aplique ao banco de dados:
-   ```bash
-   npx drizzle-kit generate
-   npx drizzle-kit migrate
-   # ou use o push para desenvolvimento rápido
-   npx drizzle-kit push
-   ```
+Edite o arquivo `.env`:
+```env
+# Database
+DATABASE_URL="postgresql://erp_user:erp_secret@localhost:5432/erp_database"
 
-5. **Popule o banco (Opcional):**
-   Para inserir dados de teste (usuários, produtos, etc):
-   ```bash
-   npm run db:seed
-   ```
+# Auth
+JWT_SECRET="sua-chave-secreta-super-segura-mude-em-producao"
+```
 
-6. **Execute o projeto:**
-   ```bash
-   npm run dev
-   ```
-   Acesse `http://localhost:3000` no seu navegador.
+## 🗄 Configuração do Banco de Dados
 
-## 📜 Scripts Disponíveis
+### Usando Docker (Recomendado)
 
-- `npm run dev`: Inicia o servidor de desenvolvimento.
-- `npm run build`: Cria a build de produção otimizada.
-- `npm run start`: Inicia o servidor de produção.
-- `npm run lint`: Executa o ESLint para verificar problemas no código.
-- `npm run db:seed`: Executa o script de seed para popular o banco.
+1. **Inicie o container PostgreSQL**
+```bash
+docker-compose up -d
+```
 
----
+Isso criará um container com:
+- **Usuário**: erp_user
+- **Senha**: erp_secret
+- **Banco**: erp_database
+- **Porta**: 5432
 
-Desenvolvido com ❤️ por [Seu Nome/Time].
+2. **Execute as migrations**
+```bash
+npx drizzle-kit push
+```
+
+3. **Popule o banco com dados de exemplo (opcional)**
+```bash
+npm run db:seed
+```
+
+### Sem Docker
+
+Se você tem PostgreSQL instalado localmente:
+
+1. Crie um banco de dados
+2. Atualize a `DATABASE_URL` no `.env`
+3. Execute as migrations e seed
+
+## ▶️ Executando o Projeto
+
+### Desenvolvimento
+```bash
+npm run dev
+```
+Acesse: [http://localhost:3000](http://localhost:3000)
+
+### Produção
+```bash
+npm run build
+npm run start
+```
+
+## 📊 Modelo de Dados
+
+O sistema possui 8 tabelas principais:
+
+```mermaid
+erDiagram
+    USUARIOS ||--o{ VENDAS : realiza
+    CLIENTES ||--o{ VENDAS : compra
+    CLIENTES ||--o{ CONTAS_RECEBER : deve
+    CATEGORIAS ||--o{ PRODUTOS : contém
+    PRODUTOS ||--o{ ITENS_VENDA : incluído
+    VENDAS ||--o{ ITENS_VENDA : contém
+    VENDAS ||--o{ CONTAS_RECEBER : gera
+    FORNECEDORES ||--o{ CONTAS_PAGAR : recebe
+```
+
+### Tabelas
+
+| Tabela | Descrição |
+|--------|-----------|
+| `usuarios` | Usuários do sistema com roles (admin, gerente, vendedor) |
+| `clientes` | Clientes com dados completos e endereço |
+| `categorias` | Categorias de produtos |
+| `produtos` | Produtos com preços, estoque e código de barras |
+| `fornecedores` | Fornecedores com CNPJ e contato |
+| `vendas` | Vendas com status, pagamento e totais |
+| `itens_venda` | Itens individuais de cada venda |
+| `contas_pagar` | Contas a pagar para fornecedores |
+| `contas_receber` | Contas a receber de clientes |
+
+### Enums
+
+- **user_role**: `admin`, `gerente`, `vendedor`
+- **venda_status**: `aberta`, `finalizada`, `cancelada`
+- **forma_pagamento**: `dinheiro`, `pix`, `cartao_credito`, `cartao_debito`, `boleto`
+- **conta_status**: `pendente`, `pago`, `atrasado`, `cancelado`
+
+## 🔗 APIs Disponíveis
+
+### Autenticação
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| POST | `/api/auth/login` | Login |
+| POST | `/api/auth/register` | Registro |
+| POST | `/api/auth/logout` | Logout |
+| GET | `/api/auth/me` | Usuário atual |
+
+### Clientes
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/clientes` | Listar clientes |
+| POST | `/api/clientes` | Criar cliente |
+| GET | `/api/clientes/[id]` | Buscar cliente |
+| PUT | `/api/clientes/[id]` | Atualizar cliente |
+| DELETE | `/api/clientes/[id]` | Remover cliente |
+
+### Produtos
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/produtos` | Listar produtos |
+| POST | `/api/produtos` | Criar produto |
+| GET | `/api/produtos/[id]` | Buscar produto |
+| PUT | `/api/produtos/[id]` | Atualizar produto |
+| DELETE | `/api/produtos/[id]` | Remover produto |
+
+### Vendas
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/vendas` | Listar vendas |
+| POST | `/api/vendas` | Criar venda |
+| GET | `/api/vendas/[id]` | Buscar venda |
+
+### Financeiro
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/financeiro/pagar` | Contas a pagar |
+| POST | `/api/financeiro/pagar` | Criar conta a pagar |
+| GET | `/api/financeiro/receber` | Contas a receber |
+| POST | `/api/financeiro/receber` | Criar conta a receber |
+
+### Dashboard
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| GET | `/api/dashboard` | Estatísticas gerais |
+| GET | `/api/relatorios` | Dados para relatórios |
+
+## 🔐 Autenticação
+
+O sistema utiliza autenticação baseada em **JWT (JSON Web Tokens)**:
+
+- **Tokens** são armazenados em cookies HTTP-only
+- **Expiração** de 7 dias
+- **Senhas** são hasheadas com bcrypt (12 rounds)
+- **Middleware** protege rotas autenticadas
+
+### Roles de Usuário
+
+| Role | Permissões |
+|------|-----------|
+| **admin** | Acesso total ao sistema |
+| **gerente** | Gestão de vendas, clientes, produtos |
+| **vendedor** | Realização de vendas e consultas |
+
+## 📱 Screenshots
+
+### Landing Page
+- Design moderno com gradientes
+- Apresentação das funcionalidades
+- Botões de acesso e registro
+
+### Dashboard
+- Cards com estatísticas principais
+- Gráficos de vendas
+- Vendas recentes e produtos mais vendidos
+
+### PDV
+- Interface intuitiva para vendas
+- Busca de produtos
+- Carrinho de compras
+
+### Modo Escuro
+- Suporte completo a tema escuro
+- Transições suaves
+
+## 🤝 Contribuindo
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
