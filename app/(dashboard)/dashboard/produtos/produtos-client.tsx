@@ -201,8 +201,8 @@ export default function ProdutosClientPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-2">
-                        <Package className="h-8 w-8" /> Produtos
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
+                        <Package className="h-6 w-6 sm:h-8 sm:w-8" /> Produtos
                     </h1>
                     <p className="text-muted-foreground">
                         Gerencie seus produtos e estoque
@@ -225,7 +225,7 @@ export default function ProdutosClientPage() {
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="nome">Nome *</Label>
                                         <Input
@@ -263,7 +263,7 @@ export default function ProdutosClientPage() {
                                         rows={2}
                                     />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="precoCusto">Preço de Custo</Label>
                                         <Input
@@ -286,7 +286,7 @@ export default function ProdutosClientPage() {
                                         />
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="estoqueAtual">Estoque Atual</Label>
                                         <Input
@@ -340,98 +340,104 @@ export default function ProdutosClientPage() {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent>
-                    {isLoading ? (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Produto</TableHead>
-                                    <TableHead className="hidden md:table-cell">Categoria</TableHead>
-                                    <TableHead className="text-right hidden sm:table-cell">Preço</TableHead>
-                                    <TableHead className="text-center hidden sm:table-cell">Estoque</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Ações</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <TableRow key={i}>
-                                        <TableCell className="max-w-[150px] sm:max-w-none"><Skeleton className="h-4 w-[180px]" /></TableCell>
-                                        <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                        <TableCell className="text-right hidden sm:flex justify-end"><Skeleton className="h-4 w-[80px]" /></TableCell>
-                                        <TableCell className="text-center justify-center hidden sm:flex"><Skeleton className="h-4 w-[60px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
-                                        <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    ) : (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Produto</TableHead>
-                                    <TableHead className="hidden md:table-cell">Categoria</TableHead>
-                                    <TableHead className="text-right hidden sm:table-cell">Preço</TableHead>
-                                    <TableHead className="text-center hidden sm:table-cell">Estoque</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Ações</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {data?.data?.length === 0 ? (
+                <CardContent className="px-2 sm:px-6">
+                    <div className="overflow-x-auto -mx-2 sm:mx-0">
+                        {isLoading ? (
+                            <Table>
+                                <TableHeader>
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                            Nenhum produto encontrado
-                                        </TableCell>
+                                        <TableHead>Produto</TableHead>
+                                        <TableHead className="hidden md:table-cell">Categoria</TableHead>
+                                        <TableHead className="text-right hidden sm:table-cell">Preço</TableHead>
+                                        <TableHead className="text-center hidden sm:table-cell">Estoque</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right w-[70px]">Ações</TableHead>
                                     </TableRow>
-                                ) : (
-                                    data?.data?.map((produto: Produto) => (
-                                        <TableRow key={produto.id}>
-                                            <TableCell className="font-medium max-w-[150px] sm:max-w-none truncate" title={produto.nome}>{produto.nome}</TableCell>
-                                            <TableCell className="hidden md:table-cell">{produto.categoria?.nome || '-'}</TableCell>
-                                            <TableCell className="text-right hidden sm:table-cell">
-                                                {formatCurrency(produto.precoVenda)}
-                                            </TableCell>
-                                            <TableCell className="text-center hidden sm:table-cell">
-                                                <div className="flex items-center justify-center gap-1">
-                                                    {produto.estoqueAtual <= produto.estoqueMinimo && (
-                                                        <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                                                    )}
-                                                    {produto.estoqueAtual}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant={produto.ativo ? 'default' : 'secondary'}>
-                                                    {produto.ativo ? 'Ativo' : 'Inativo'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => handleEdit(produto)}
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => {
-                                                        if (confirm('Deseja remover este produto?')) {
-                                                            deleteMutation.mutate(produto.id);
-                                                        }
-                                                    }}
-                                                >
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                </Button>
+                                </TableHeader>
+                                <TableBody>
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell className="max-w-[150px] sm:max-w-none"><Skeleton className="h-4 w-[180px]" /></TableCell>
+                                            <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                            <TableCell className="text-right hidden sm:flex justify-end"><Skeleton className="h-4 w-[80px]" /></TableCell>
+                                            <TableCell className="text-center justify-center hidden sm:flex"><Skeleton className="h-4 w-[60px]" /></TableCell>
+                                            <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
+                                            <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Produto</TableHead>
+                                        <TableHead className="hidden md:table-cell">Categoria</TableHead>
+                                        <TableHead className="text-right hidden sm:table-cell">Preço</TableHead>
+                                        <TableHead className="text-center hidden sm:table-cell">Estoque</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {data?.data?.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                                Nenhum produto encontrado
                                             </TableCell>
                                         </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    )}
+                                    ) : (
+                                        data?.data?.map((produto: Produto) => (
+                                            <TableRow key={produto.id}>
+                                                <TableCell className="font-medium max-w-[80px] truncate" title={produto.nome}>{produto.nome}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{produto.categoria?.nome || '-'}</TableCell>
+                                                <TableCell className="text-right hidden sm:table-cell">
+                                                    {formatCurrency(produto.precoVenda)}
+                                                </TableCell>
+                                                <TableCell className="text-center hidden sm:table-cell">
+                                                    <div className="flex items-center justify-center gap-1">
+                                                        {produto.estoqueAtual <= produto.estoqueMinimo && (
+                                                            <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                                        )}
+                                                        {produto.estoqueAtual}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant={produto.ativo ? 'default' : 'secondary'}>
+                                                        {produto.ativo ? 'Ativo' : 'Inativo'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right p-1">
+                                                    <div className="flex justify-end gap-0">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8"
+                                                            onClick={() => handleEdit(produto)}
+                                                        >
+                                                            <Pencil className="h-3.5 w-3.5" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8"
+                                                            onClick={() => {
+                                                                if (confirm('Deseja remover este produto?')) {
+                                                                    deleteMutation.mutate(produto.id);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        )}
+                    </div>
                 </CardContent>
             </Card>
         </div>

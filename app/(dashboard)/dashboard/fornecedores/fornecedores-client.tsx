@@ -155,8 +155,8 @@ export default function FornecedoresClientPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-2">
-                        <Truck className="h-8 w-8" /> Fornecedores
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
+                        <Truck className="h-6 w-6 sm:h-8 sm:w-8" /> Fornecedores
                     </h1>
                     <p className="text-muted-foreground">
                         Gerencie seus fornecedores
@@ -179,7 +179,7 @@ export default function FornecedoresClientPage() {
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="nome">Nome *</Label>
                                         <Input
@@ -198,7 +198,7 @@ export default function FornecedoresClientPage() {
                                         />
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="email">Email</Label>
                                         <Input
@@ -251,89 +251,95 @@ export default function FornecedoresClientPage() {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent>
-                    {isLoading ? (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Nome</TableHead>
-                                    <TableHead className="hidden lg:table-cell">CNPJ</TableHead>
-                                    <TableHead className="hidden md:table-cell">Email</TableHead>
-                                    <TableHead className="hidden sm:table-cell">Telefone</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Ações</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <TableRow key={i}>
-                                        <TableCell><Skeleton className="h-4 w-[180px]" /></TableCell>
-                                        <TableCell className="hidden lg:table-cell"><Skeleton className="h-4 w-[140px]" /></TableCell>
-                                        <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[180px]" /></TableCell>
-                                        <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
-                                        <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    ) : (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Nome</TableHead>
-                                    <TableHead className="hidden lg:table-cell">CNPJ</TableHead>
-                                    <TableHead className="hidden md:table-cell">Email</TableHead>
-                                    <TableHead className="hidden sm:table-cell">Telefone</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Ações</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {data?.data?.length === 0 ? (
+                <CardContent className="px-2 sm:px-6">
+                    <div className="overflow-x-auto -mx-2 sm:mx-0">
+                        {isLoading ? (
+                            <Table>
+                                <TableHeader>
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                            Nenhum fornecedor encontrado
-                                        </TableCell>
+                                        <TableHead>Nome</TableHead>
+                                        <TableHead className="hidden lg:table-cell">CNPJ</TableHead>
+                                        <TableHead className="hidden md:table-cell">Email</TableHead>
+                                        <TableHead className="hidden sm:table-cell">Telefone</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right w-[70px]">Ações</TableHead>
                                     </TableRow>
-                                ) : (
-                                    data?.data?.map((fornecedor: Fornecedor) => (
-                                        <TableRow key={fornecedor.id}>
-                                            <TableCell className="font-medium">{fornecedor.nome}</TableCell>
-                                            <TableCell className="hidden lg:table-cell">{fornecedor.cnpj || '-'}</TableCell>
-                                            <TableCell className="hidden md:table-cell">{fornecedor.email || '-'}</TableCell>
-                                            <TableCell className="hidden sm:table-cell">{fornecedor.telefone || '-'}</TableCell>
-                                            <TableCell>
-                                                <Badge variant={fornecedor.ativo ? 'default' : 'secondary'}>
-                                                    {fornecedor.ativo ? 'Ativo' : 'Inativo'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => handleEdit(fornecedor)}
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => {
-                                                        if (confirm('Deseja remover este fornecedor?')) {
-                                                            deleteMutation.mutate(fornecedor.id);
-                                                        }
-                                                    }}
-                                                >
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                </Button>
+                                </TableHeader>
+                                <TableBody>
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell><Skeleton className="h-4 w-[180px]" /></TableCell>
+                                            <TableCell className="hidden lg:table-cell"><Skeleton className="h-4 w-[140px]" /></TableCell>
+                                            <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[180px]" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                            <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
+                                            <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Nome</TableHead>
+                                        <TableHead className="hidden lg:table-cell">CNPJ</TableHead>
+                                        <TableHead className="hidden md:table-cell">Email</TableHead>
+                                        <TableHead className="hidden sm:table-cell">Telefone</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {data?.data?.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                                Nenhum fornecedor encontrado
                                             </TableCell>
                                         </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    )}
+                                    ) : (
+                                        data?.data?.map((fornecedor: Fornecedor) => (
+                                            <TableRow key={fornecedor.id}>
+                                                <TableCell className="font-medium max-w-[80px] truncate" title={fornecedor.nome}>{fornecedor.nome}</TableCell>
+                                                <TableCell className="hidden lg:table-cell">{fornecedor.cnpj || '-'}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{fornecedor.email || '-'}</TableCell>
+                                                <TableCell className="hidden sm:table-cell">{fornecedor.telefone || '-'}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={fornecedor.ativo ? 'default' : 'secondary'}>
+                                                        {fornecedor.ativo ? 'Ativo' : 'Inativo'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right p-1">
+                                                    <div className="flex justify-end gap-0">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8"
+                                                            onClick={() => handleEdit(fornecedor)}
+                                                        >
+                                                            <Pencil className="h-3.5 w-3.5" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8"
+                                                            onClick={() => {
+                                                                if (confirm('Deseja remover este fornecedor?')) {
+                                                                    deleteMutation.mutate(fornecedor.id);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        )}
+                    </div>
                 </CardContent>
             </Card>
         </div>

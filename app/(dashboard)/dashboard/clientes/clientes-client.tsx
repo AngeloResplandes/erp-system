@@ -165,8 +165,8 @@ export default function ClientesClientPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-center gap-2">
-                        <Users className="h-8 w-8" /> Clientes
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
+                        <Users className="h-6 w-6 sm:h-8 sm:w-8" /> Clientes
                     </h1>
                     <p className="text-muted-foreground">
                         Gerencie seus clientes
@@ -189,7 +189,7 @@ export default function ClientesClientPage() {
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="nome">Nome *</Label>
                                         <Input
@@ -208,7 +208,7 @@ export default function ClientesClientPage() {
                                         />
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="email">Email</Label>
                                         <Input
@@ -235,7 +235,7 @@ export default function ClientesClientPage() {
                                         onChange={(e) => setFormData({ ...formData, endereco: e.target.value })}
                                     />
                                 </div>
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div className="space-y-2">
                                         <Label htmlFor="cidade">Cidade</Label>
                                         <Input
@@ -288,95 +288,102 @@ export default function ClientesClientPage() {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent>
-                    {isLoading ? (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Nome</TableHead>
-                                    <TableHead className="hidden md:table-cell">Email</TableHead>
-                                    <TableHead className="hidden lg:table-cell">Telefone</TableHead>
-                                    <TableHead className="hidden md:table-cell">Cidade/UF</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Ações</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                    <TableRow key={i}>
-                                        <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
-                                        <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[200px]" /></TableCell>
-                                        <TableCell className="hidden lg:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                        <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
-                                        <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
-                                        <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    ) : (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Nome</TableHead>
-                                    <TableHead className="hidden md:table-cell">Email</TableHead>
-                                    <TableHead className="hidden lg:table-cell">Telefone</TableHead>
-                                    <TableHead className="hidden md:table-cell">Cidade/UF</TableHead>
-                                    <TableHead>Status</TableHead>
-                                    <TableHead className="text-right">Ações</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {data?.data?.length === 0 ? (
+                <CardContent className="px-2 sm:px-6">
+                    <div className="overflow-x-auto -mx-2 sm:mx-0">
+                        {isLoading ? (
+                            <Table>
+                                <TableHeader>
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                            Nenhum cliente encontrado
-                                        </TableCell>
+                                        <TableHead>Nome</TableHead>
+                                        <TableHead className="hidden md:table-cell">Email</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Telefone</TableHead>
+                                        <TableHead className="hidden md:table-cell">Cidade/UF</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right w-[70px]">Ações</TableHead>
                                     </TableRow>
-                                ) : (
-                                    data?.data?.map((cliente: Cliente) => (
-                                        <TableRow key={cliente.id}>
-                                            <TableCell className="font-medium">{cliente.nome}</TableCell>
-                                            <TableCell className="hidden md:table-cell">{cliente.email || '-'}</TableCell>
-                                            <TableCell className="hidden lg:table-cell">{cliente.telefone || '-'}</TableCell>
-                                            <TableCell className="hidden md:table-cell">
-                                                {cliente.cidade && cliente.estado
-                                                    ? `${cliente.cidade}/${cliente.estado}`
-                                                    : '-'}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge variant={cliente.ativo ? 'default' : 'secondary'}>
-                                                    {cliente.ativo ? 'Ativo' : 'Inativo'}
-                                                </Badge>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => handleEdit(cliente)}
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => {
-                                                        if (confirm('Deseja remover este cliente?')) {
-                                                            deleteMutation.mutate(cliente.id);
-                                                        }
-                                                    }}
-                                                >
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                </Button>
+                                </TableHeader>
+                                <TableBody>
+                                    {Array.from({ length: 5 }).map((_, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
+                                            <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[200px]" /></TableCell>
+                                            <TableCell className="hidden lg:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                            <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
+                                            <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
+                                            <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Nome</TableHead>
+                                        <TableHead className="hidden md:table-cell">Email</TableHead>
+                                        <TableHead className="hidden lg:table-cell">Telefone</TableHead>
+                                        <TableHead className="hidden md:table-cell">Cidade/UF</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {data?.data?.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                                Nenhum cliente encontrado
                                             </TableCell>
                                         </TableRow>
-                                    ))
-                                )}
-                            </TableBody>
-                        </Table>
-                    )}
+                                    ) : (
+                                        data?.data?.map((cliente: Cliente) => (
+                                            <TableRow key={cliente.id}>
+                                                <TableCell className="font-medium max-w-[80px] truncate" title={cliente.nome}>{cliente.nome}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{cliente.email || '-'}</TableCell>
+                                                <TableCell className="hidden lg:table-cell">{cliente.telefone || '-'}</TableCell>
+                                                <TableCell className="hidden md:table-cell">
+                                                    {cliente.cidade && cliente.estado
+                                                        ? `${cliente.cidade}/${cliente.estado}`
+                                                        : '-'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant={cliente.ativo ? 'default' : 'secondary'}>
+                                                        {cliente.ativo ? 'Ativo' : 'Inativo'}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-right p-1">
+                                                    <div className="flex justify-end gap-0">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8"
+                                                            onClick={() => handleEdit(cliente)}
+                                                        >
+                                                            <Pencil className="h-3.5 w-3.5" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8"
+                                                            onClick={() => {
+                                                                if (confirm('Deseja remover este cliente?')) {
+                                                                    deleteMutation.mutate(cliente.id);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        )}
+                    </div>
                 </CardContent>
             </Card>
         </div>
     );
 }
+

@@ -87,18 +87,18 @@ export default function RelatoriosClientPage() {
 
     return (
         <div className="space-y-6 overflow-x-hidden">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                        <BarChart3 className="h-8 w-8" />
+                    <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
+                        <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
                         Relatórios
                     </h1>
-                    <p className="text-muted-foreground">
-                        Análise de desempenho e métricas do negócio
+                    <p className="text-sm sm:text-base text-muted-foreground">
+                        Análise de desempenho e métricas
                     </p>
                 </div>
                 <Select value={periodo} onValueChange={setPeriodo}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue placeholder="Período" />
                     </SelectTrigger>
                     <SelectContent>
@@ -110,7 +110,7 @@ export default function RelatoriosClientPage() {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
                 <Card className="gap-2 py-4">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
                         <CardTitle className="text-sm font-medium">Total Clientes</CardTitle>
@@ -120,7 +120,7 @@ export default function RelatoriosClientPage() {
                         {isLoading ? (
                             <Skeleton className="h-8 w-20" />
                         ) : (
-                            <div className="text-2xl font-bold">{resumo?.totalClientes || 0}</div>
+                            <div className="text-xl sm:text-2xl font-bold">{resumo?.totalClientes || 0}</div>
                         )}
                     </CardContent>
                 </Card>
@@ -133,7 +133,7 @@ export default function RelatoriosClientPage() {
                         {isLoading ? (
                             <Skeleton className="h-8 w-20" />
                         ) : (
-                            <div className="text-2xl font-bold">{resumo?.totalProdutos || 0}</div>
+                            <div className="text-xl sm:text-2xl font-bold">{resumo?.totalProdutos || 0}</div>
                         )}
                     </CardContent>
                 </Card>
@@ -147,7 +147,7 @@ export default function RelatoriosClientPage() {
                             <Skeleton className="h-8 w-20" />
                         ) : (
                             <>
-                                <div className="text-2xl font-bold">{resumo?.vendasPeriodo || 0}</div>
+                                <div className="text-xl sm:text-2xl font-bold">{resumo?.vendasPeriodo || 0}</div>
                                 <p className="text-xs text-muted-foreground">
                                     de {resumo?.totalVendas || 0} totais
                                 </p>
@@ -165,7 +165,7 @@ export default function RelatoriosClientPage() {
                             <Skeleton className="h-8 w-32" />
                         ) : (
                             <>
-                                <div className="text-2xl font-bold text-green-500">
+                                <div className="text-lg sm:text-2xl font-bold text-green-500">
                                     {formatCurrency(resumo?.receitaPeriodo || 0)}
                                 </div>
                                 <p className="text-xs text-muted-foreground">
@@ -184,15 +184,15 @@ export default function RelatoriosClientPage() {
                     <CardHeader className="pb-0">
                         <CardTitle className="text-base">Vendas Mensais</CardTitle>
                     </CardHeader>
-                    <CardContent className="pt-2">
+                    <CardContent className="pt-2 px-2 sm:px-6">
                         {isLoading ? (
                             <Skeleton className="h-64 w-full" />
                         ) : vendasMensais.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={250}>
+                            <ResponsiveContainer width="100%" height={200}>
                                 <BarChart data={vendasMensais}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                                    <XAxis dataKey="mes" stroke="#888" fontSize={12} />
-                                    <YAxis stroke="#888" fontSize={12} />
+                                    <XAxis dataKey="mes" stroke="#888" fontSize={10} tick={{ fontSize: 10 }} />
+                                    <YAxis stroke="#888" fontSize={10} tick={{ fontSize: 10 }} width={30} />
                                     <Tooltip
                                         contentStyle={{ backgroundColor: '#1f1f1f', border: '1px solid #333', color: '#fff' }}
                                         itemStyle={{ color: '#fff' }}
@@ -215,17 +215,19 @@ export default function RelatoriosClientPage() {
                     <CardHeader className="pb-0">
                         <CardTitle className="text-base">Receita Mensal</CardTitle>
                     </CardHeader>
-                    <CardContent className="pt-2">
+                    <CardContent className="pt-2 px-2 sm:px-6">
                         {isLoading ? (
                             <Skeleton className="h-64 w-full" />
                         ) : vendasMensais.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={250}>
+                            <ResponsiveContainer width="100%" height={200}>
                                 <LineChart data={vendasMensais}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                                    <XAxis dataKey="mes" stroke="#888" fontSize={12} />
+                                    <XAxis dataKey="mes" stroke="#888" fontSize={10} tick={{ fontSize: 10 }} />
                                     <YAxis
                                         stroke="#888"
-                                        fontSize={12}
+                                        fontSize={10}
+                                        tick={{ fontSize: 10 }}
+                                        width={40}
                                         tickFormatter={(value) => `R$${(value / 1000).toFixed(0)}k`}
                                     />
                                     <Tooltip
@@ -259,19 +261,19 @@ export default function RelatoriosClientPage() {
                     <CardHeader className="pb-0">
                         <CardTitle className="text-base">Formas de Pagamento</CardTitle>
                     </CardHeader>
-                    <CardContent className="pt-2">
+                    <CardContent className="pt-2 px-2 sm:px-6">
                         {isLoading ? (
                             <Skeleton className="h-64 w-full" />
                         ) : formasPagamentoData.length > 0 ? (
-                            <div className="flex items-center gap-4">
-                                <ResponsiveContainer width="50%" height={200}>
+                            <div className="flex flex-col sm:flex-row items-center gap-4">
+                                <ResponsiveContainer width="100%" height={160} className="sm:w-1/2">
                                     <PieChart>
                                         <Pie
                                             data={formasPagamentoData}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={50}
-                                            outerRadius={80}
+                                            innerRadius={40}
+                                            outerRadius={65}
                                             paddingAngle={2}
                                             dataKey="value"
                                         >
@@ -290,7 +292,7 @@ export default function RelatoriosClientPage() {
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
-                                <div className="flex-1 space-y-2">
+                                <div className="w-full sm:flex-1 space-y-2">
                                     {formasPagamentoData.map((item) => (
                                         <div key={item.name} className="flex items-center justify-between text-sm">
                                             <div className="flex items-center gap-2">
@@ -318,21 +320,22 @@ export default function RelatoriosClientPage() {
                     <CardHeader className="pb-0">
                         <CardTitle className="text-base">Produtos Mais Vendidos</CardTitle>
                     </CardHeader>
-                    <CardContent className="pt-2">
+                    <CardContent className="pt-2 px-2 sm:px-6">
                         {isLoading ? (
                             <Skeleton className="h-64 w-full" />
                         ) : produtosMaisVendidos.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={250}>
+                            <ResponsiveContainer width="100%" height={200}>
                                 <BarChart data={produtosMaisVendidos} layout="vertical">
                                     <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                                    <XAxis type="number" stroke="#888" fontSize={12} />
+                                    <XAxis type="number" stroke="#888" fontSize={10} tick={{ fontSize: 10 }} />
                                     <YAxis
                                         type="category"
                                         dataKey="nome"
                                         stroke="#888"
-                                        fontSize={11}
-                                        width={120}
-                                        tickFormatter={(value) => value.length > 15 ? `${value.slice(0, 15)}...` : value}
+                                        fontSize={9}
+                                        tick={{ fontSize: 9 }}
+                                        width={80}
+                                        tickFormatter={(value) => value.length > 10 ? `${value.slice(0, 10)}...` : value}
                                     />
                                     <Tooltip
                                         contentStyle={{ backgroundColor: '#1f1f1f', border: '1px solid #333', color: '#fff' }}

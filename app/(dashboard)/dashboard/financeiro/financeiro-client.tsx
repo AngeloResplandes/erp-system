@@ -234,8 +234,8 @@ export default function FinanceiroClientPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                    <DollarSign className="h-8 w-8" /> Financeiro
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
+                    <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" /> Financeiro
                 </h1>
                 <p className="text-muted-foreground">
                     Gerencie contas a pagar e a receber
@@ -250,7 +250,7 @@ export default function FinanceiroClientPage() {
                         <TrendingDown className="h-4 w-4 text-red-500" />
                     </CardHeader>
                     <CardContent className="pt-0">
-                        <div className="text-2xl font-bold text-red-500">
+                        <div className="text-xl sm:text-2xl font-bold text-red-500">
                             {formatCurrency(totalPagar.toString())}
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -264,7 +264,7 @@ export default function FinanceiroClientPage() {
                         <TrendingUp className="h-4 w-4 text-green-500" />
                     </CardHeader>
                     <CardContent className="pt-0">
-                        <div className="text-2xl font-bold text-green-500">
+                        <div className="text-xl sm:text-2xl font-bold text-green-500">
                             {formatCurrency(totalReceber.toString())}
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -278,7 +278,7 @@ export default function FinanceiroClientPage() {
                         <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent className="pt-0">
-                        <div className={`text-2xl font-bold ${totalReceber - totalPagar >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <div className={`text-xl sm:text-2xl font-bold ${totalReceber - totalPagar >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {formatCurrency((totalReceber - totalPagar).toString())}
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -289,9 +289,9 @@ export default function FinanceiroClientPage() {
             </div>
 
             <Tabs defaultValue="pagar" className="space-y-4">
-                <TabsList>
-                    <TabsTrigger value="pagar">Contas a Pagar</TabsTrigger>
-                    <TabsTrigger value="receber">Contas a Receber</TabsTrigger>
+                <TabsList className="w-full sm:w-auto">
+                    <TabsTrigger value="pagar" className="flex-1 sm:flex-none text-xs sm:text-sm">Contas a Pagar</TabsTrigger>
+                    <TabsTrigger value="receber" className="flex-1 sm:flex-none text-xs sm:text-sm">Contas a Receber</TabsTrigger>
                 </TabsList>
 
                 {/* Contas a Pagar */}
@@ -301,8 +301,8 @@ export default function FinanceiroClientPage() {
                             <CardTitle>Contas a Pagar</CardTitle>
                             <Dialog open={isOpenPagar} onOpenChange={setIsOpenPagar}>
                                 <DialogTrigger asChild>
-                                    <Button>
-                                        <Plus className="mr-2 h-4 w-4" /> Nova Conta
+                                    <Button className="w-full sm:w-auto">
+                                        <Plus className="mr-2 h-4 w-4" /> <span className="hidden sm:inline">Nova </span>Conta
                                     </Button>
                                 </DialogTrigger>
                                 <DialogContent>
@@ -322,7 +322,7 @@ export default function FinanceiroClientPage() {
                                                     required
                                                 />
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div className="space-y-2">
                                                     <Label>Valor *</Label>
                                                     <Input
@@ -343,7 +343,7 @@ export default function FinanceiroClientPage() {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <div className="space-y-2">
                                                     <Label>Fornecedor</Label>
                                                     <Select
@@ -382,88 +382,94 @@ export default function FinanceiroClientPage() {
                                 </DialogContent>
                             </Dialog>
                         </CardHeader>
-                        <CardContent>
-                            {loadingPagar ? (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Descrição</TableHead>
-                                            <TableHead className="hidden md:table-cell">Fornecedor</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
-                                            <TableHead className="text-right">Valor</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Status</TableHead>
-                                            <TableHead className="text-right">Ações</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {Array.from({ length: 5 }).map((_, i) => (
-                                            <TableRow key={i} className="text-xs sm:text-sm">
-                                                <TableCell className="max-w-[100px] sm:max-w-none p-2 sm:p-4"><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                                <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[150px]" /></TableCell>
-                                                <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
-                                                <TableCell className="text-right flex justify-end p-2 sm:p-4"><Skeleton className="h-4 w-[80px]" /></TableCell>
-                                                <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
-                                                <TableCell className="text-right p-2 sm:p-4"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            ) : (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Descrição</TableHead>
-                                            <TableHead className="hidden md:table-cell">Fornecedor</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
-                                            <TableHead className="text-right">Valor</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Status</TableHead>
-                                            <TableHead className="text-right">Ações</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {contasPagar?.data?.length === 0 ? (
+                        <CardContent className="px-2 sm:px-6">
+                            <div className="overflow-x-auto -mx-2 sm:mx-0">
+                                {loadingPagar ? (
+                                    <Table>
+                                        <TableHeader>
                                             <TableRow>
-                                                <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                                    Nenhuma conta encontrada
-                                                </TableCell>
+                                                <TableHead>Descrição</TableHead>
+                                                <TableHead className="hidden md:table-cell">Fornecedor</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
+                                                <TableHead className="text-right">Valor</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Status</TableHead>
+                                                <TableHead className="text-right w-[70px]">Ações</TableHead>
                                             </TableRow>
-                                        ) : (
-                                            contasPagar?.data?.map((conta: ContaPagar) => (
-                                                <TableRow key={conta.id} className="text-xs sm:text-sm">
-                                                    <TableCell className="font-medium max-w-[100px] sm:max-w-none truncate p-2 sm:p-4" title={conta.descricao}>{conta.descricao}</TableCell>
-                                                    <TableCell className="hidden md:table-cell">{conta.fornecedor?.nome || '-'}</TableCell>
-                                                    <TableCell className="hidden sm:table-cell">{formatDate(conta.dataVencimento)}</TableCell>
-                                                    <TableCell className="text-right p-2 sm:p-4">{formatCurrency(conta.valor)}</TableCell>
-                                                    <TableCell className="hidden sm:table-cell">{getStatusBadge(conta.status)}</TableCell>
-                                                    <TableCell className="text-right p-2 sm:p-4">
-                                                        {conta.status !== 'pago' && (
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                onClick={() => pagarConta.mutate(conta.id)}
-                                                                title="Marcar como pago"
-                                                            >
-                                                                <Check className="h-4 w-4 text-green-500" />
-                                                            </Button>
-                                                        )}
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => {
-                                                                if (confirm('Deseja remover esta conta?')) {
-                                                                    deletePagar.mutate(conta.id);
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                                        </Button>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {Array.from({ length: 5 }).map((_, i) => (
+                                                <TableRow key={i} className="text-xs sm:text-sm">
+                                                    <TableCell className="max-w-[100px] sm:max-w-none p-2 sm:p-4"><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                                    <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[150px]" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
+                                                    <TableCell className="text-right flex justify-end p-2 sm:p-4"><Skeleton className="h-4 w-[80px]" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
+                                                    <TableCell className="text-right p-2 sm:p-4"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                ) : (
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Descrição</TableHead>
+                                                <TableHead className="hidden md:table-cell">Fornecedor</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
+                                                <TableHead className="text-right">Valor</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Status</TableHead>
+                                                <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {contasPagar?.data?.length === 0 ? (
+                                                <TableRow>
+                                                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                                        Nenhuma conta encontrada
                                                     </TableCell>
                                                 </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            )}
+                                            ) : (
+                                                contasPagar?.data?.map((conta: ContaPagar) => (
+                                                    <TableRow key={conta.id} className="text-xs sm:text-sm">
+                                                        <TableCell className="font-medium max-w-[80px] truncate p-2 sm:p-4" title={conta.descricao}>{conta.descricao}</TableCell>
+                                                        <TableCell className="hidden md:table-cell">{conta.fornecedor?.nome || '-'}</TableCell>
+                                                        <TableCell className="hidden sm:table-cell">{formatDate(conta.dataVencimento)}</TableCell>
+                                                        <TableCell className="text-right p-2 sm:p-4">{formatCurrency(conta.valor)}</TableCell>
+                                                        <TableCell className="hidden sm:table-cell">{getStatusBadge(conta.status)}</TableCell>
+                                                        <TableCell className="text-right p-1">
+                                                            <div className="flex justify-end gap-0">
+                                                                {conta.status !== 'pago' && (
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        className="h-8 w-8"
+                                                                        onClick={() => pagarConta.mutate(conta.id)}
+                                                                        title="Marcar como pago"
+                                                                    >
+                                                                        <Check className="h-3.5 w-3.5 text-green-500" />
+                                                                    </Button>
+                                                                )}
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="h-8 w-8"
+                                                                    onClick={() => {
+                                                                        if (confirm('Deseja remover esta conta?')) {
+                                                                            deletePagar.mutate(conta.id);
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -474,88 +480,94 @@ export default function FinanceiroClientPage() {
                         <CardHeader>
                             <CardTitle>Contas a Receber</CardTitle>
                         </CardHeader>
-                        <CardContent>
-                            {loadingReceber ? (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Cliente</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Venda</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
-                                            <TableHead className="text-right">Valor</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Status</TableHead>
-                                            <TableHead className="text-right">Ações</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {Array.from({ length: 5 }).map((_, i) => (
-                                            <TableRow key={i} className="text-xs sm:text-sm">
-                                                <TableCell className="max-w-[100px] sm:max-w-none p-2 sm:p-4"><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                                <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[60px]" /></TableCell>
-                                                <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
-                                                <TableCell className="text-right flex justify-end p-2 sm:p-4"><Skeleton className="h-4 w-[80px]" /></TableCell>
-                                                <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
-                                                <TableCell className="text-right p-2 sm:p-4"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            ) : (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Cliente</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Venda</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
-                                            <TableHead className="text-right">Valor</TableHead>
-                                            <TableHead className="hidden sm:table-cell">Status</TableHead>
-                                            <TableHead className="text-right">Ações</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {contasReceber?.data?.length === 0 ? (
+                        <CardContent className="px-2 sm:px-6">
+                            <div className="overflow-x-auto -mx-2 sm:mx-0">
+                                {loadingReceber ? (
+                                    <Table>
+                                        <TableHeader>
                                             <TableRow>
-                                                <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                                    Nenhuma conta encontrada
-                                                </TableCell>
+                                                <TableHead>Cliente</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Venda</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
+                                                <TableHead className="text-right">Valor</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Status</TableHead>
+                                                <TableHead className="text-right w-[70px]">Ações</TableHead>
                                             </TableRow>
-                                        ) : (
-                                            contasReceber?.data?.map((conta: ContaReceber) => (
-                                                <TableRow key={conta.id} className="text-xs sm:text-sm">
-                                                    <TableCell className="font-medium max-w-[100px] sm:max-w-none truncate p-2 sm:p-4" title={conta.cliente?.nome}>{conta.cliente?.nome || '-'}</TableCell>
-                                                    <TableCell className="hidden sm:table-cell">{conta.venda ? `#${conta.venda.id}` : '-'}</TableCell>
-                                                    <TableCell className="hidden sm:table-cell">{formatDate(conta.dataVencimento)}</TableCell>
-                                                    <TableCell className="text-right p-2 sm:p-4">{formatCurrency(conta.valor)}</TableCell>
-                                                    <TableCell className="hidden sm:table-cell">{getStatusBadge(conta.status)}</TableCell>
-                                                    <TableCell className="text-right p-2 sm:p-4">
-                                                        {conta.status !== 'pago' && (
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                onClick={() => receberConta.mutate(conta.id)}
-                                                                title="Marcar como recebido"
-                                                            >
-                                                                <Check className="h-4 w-4 text-green-500" />
-                                                            </Button>
-                                                        )}
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => {
-                                                                if (confirm('Deseja remover esta conta?')) {
-                                                                    deleteReceber.mutate(conta.id);
-                                                                }
-                                                            }}
-                                                        >
-                                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                                        </Button>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {Array.from({ length: 5 }).map((_, i) => (
+                                                <TableRow key={i} className="text-xs sm:text-sm">
+                                                    <TableCell className="max-w-[100px] sm:max-w-none p-2 sm:p-4"><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[60px]" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
+                                                    <TableCell className="text-right flex justify-end p-2 sm:p-4"><Skeleton className="h-4 w-[80px]" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
+                                                    <TableCell className="text-right p-2 sm:p-4"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                ) : (
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Cliente</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Venda</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
+                                                <TableHead className="text-right">Valor</TableHead>
+                                                <TableHead className="hidden sm:table-cell">Status</TableHead>
+                                                <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {contasReceber?.data?.length === 0 ? (
+                                                <TableRow>
+                                                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                                        Nenhuma conta encontrada
                                                     </TableCell>
                                                 </TableRow>
-                                            ))
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            )}
+                                            ) : (
+                                                contasReceber?.data?.map((conta: ContaReceber) => (
+                                                    <TableRow key={conta.id} className="text-xs sm:text-sm">
+                                                        <TableCell className="font-medium max-w-[80px] truncate p-2 sm:p-4" title={conta.cliente?.nome}>{conta.cliente?.nome || '-'}</TableCell>
+                                                        <TableCell className="hidden sm:table-cell">{conta.venda ? `#${conta.venda.id}` : '-'}</TableCell>
+                                                        <TableCell className="hidden sm:table-cell">{formatDate(conta.dataVencimento)}</TableCell>
+                                                        <TableCell className="text-right p-2 sm:p-4">{formatCurrency(conta.valor)}</TableCell>
+                                                        <TableCell className="hidden sm:table-cell">{getStatusBadge(conta.status)}</TableCell>
+                                                        <TableCell className="text-right p-1">
+                                                            <div className="flex justify-end gap-0">
+                                                                {conta.status !== 'pago' && (
+                                                                    <Button
+                                                                        variant="ghost"
+                                                                        size="icon"
+                                                                        className="h-8 w-8"
+                                                                        onClick={() => receberConta.mutate(conta.id)}
+                                                                        title="Marcar como recebido"
+                                                                    >
+                                                                        <Check className="h-3.5 w-3.5 text-green-500" />
+                                                                    </Button>
+                                                                )}
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="h-8 w-8"
+                                                                    onClick={() => {
+                                                                        if (confirm('Deseja remover esta conta?')) {
+                                                                            deleteReceber.mutate(conta.id);
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                )}
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
