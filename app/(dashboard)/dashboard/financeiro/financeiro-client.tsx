@@ -14,15 +14,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import {
     Tabs,
     TabsContent,
     TabsList,
@@ -43,14 +34,16 @@ import {
     Plus,
     Check,
     Trash2,
-    Loader2,
     TrendingUp,
     TrendingDown,
-    Calendar,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
+import { PageHeader } from '@/components/page-header';
+import { FormModal } from '@/components/form-modal';
+import { ConfirmDialog, useConfirmDialog } from '@/components/confirm-dialog';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import type { Fornecedor, ContaPagarFormData } from '@/types';
 
 interface ContaPagar {
     id: number;
@@ -73,23 +66,36 @@ interface ContaReceber {
     venda?: { id: number } | null;
 }
 
-interface Fornecedor {
-    id: number;
-    nome: string;
-}
+const initialFormPagar: ContaPagarFormData = {
+    descricao: '',
+    valor: '',
+    dataVencimento: '',
+    fornecedorId: '',
+    categoria: '',
+};
+
+const getStatusBadge = (status: string) => {
+    switch (status) {
+        case 'pago':
+            return <Badge className="bg-green-500">Pago</Badge>;
+        case 'atrasado':
+            return <Badge variant="destructive">Atrasado</Badge>;
+        case 'cancelado':
+            return <Badge variant="secondary">Cancelado</Badge>;
+        default:
+            return <Badge variant="outline">Pendente</Badge>;
+    }
+};
 
 export default function FinanceiroClientPage() {
     const [isOpenPagar, setIsOpenPagar] = useState(false);
-    const [formPagar, setFormPagar] = useState({
-        descricao: '',
-        valor: '',
-        dataVencimento: '',
-        fornecedorId: '',
-        categoria: '',
-    });
+    const [formPagar, setFormPagar] = useState<ContaPagarFormData>(initialFormPagar);
+    const [deleteTarget, setDeleteTarget] = useState<{ type: 'pagar' | 'receber'; id: number } | null>(null);
 
     const queryClient = useQueryClient();
+    const { isOpen: confirmOpen, setIsOpen: setConfirmOpen, confirm, handleConfirm, isLoading: confirmLoading } = useConfirmDialog();
 
+    // Queries
     const { data: contasPagar, isLoading: loadingPagar } = useQuery({
         queryKey: ['contas-pagar'],
         queryFn: async () => {
@@ -114,8 +120,9 @@ export default function FinanceiroClientPage() {
         },
     });
 
+    // Mutations
     const createContaPagar = useMutation({
-        mutationFn: async (data: typeof formPagar) => {
+        mutationFn: async (data: ContaPagarFormData) => {
             const res = await fetch('/api/financeiro/contas-pagar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -130,7 +137,7 @@ export default function FinanceiroClientPage() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
             toast.success('Conta criada com sucesso!');
-            setFormPagar({ descricao: '', valor: '', dataVencimento: '', fornecedorId: '', categoria: '' });
+            setFormPagar(initialFormPagar);
             setIsOpenPagar(false);
         },
         onError: () => toast.error('Erro ao criar conta'),
@@ -196,28 +203,15 @@ export default function FinanceiroClientPage() {
         onError: () => toast.error('Erro ao remover conta'),
     });
 
-    const formatCurrency = (value: string) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(parseFloat(value) || 0);
-    };
-
-    const formatDate = (date: string) => {
-        return format(new Date(date), "dd/MM/yyyy", { locale: ptBR });
-    };
-
-    const getStatusBadge = (status: string) => {
-        switch (status) {
-            case 'pago':
-                return <Badge className="bg-green-500">Pago</Badge>;
-            case 'atrasado':
-                return <Badge variant="destructive">Atrasado</Badge>;
-            case 'cancelado':
-                return <Badge variant="secondary">Cancelado</Badge>;
-            default:
-                return <Badge variant="outline">Pendente</Badge>;
-        }
+    const handleDeleteClick = (type: 'pagar' | 'receber', id: number) => {
+        setDeleteTarget({ type, id });
+        confirm(() => {
+            if (type === 'pagar') {
+                deletePagar.mutate(id);
+            } else {
+                deleteReceber.mutate(id);
+            }
+        });
     };
 
     // Calculate totals
@@ -231,16 +225,15 @@ export default function FinanceiroClientPage() {
         0
     ) || 0;
 
+    const fornecedoresData: Fornecedor[] = fornecedores?.data || [];
+
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2">
-                    <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" /> Financeiro
-                </h1>
-                <p className="text-muted-foreground">
-                    Gerencie contas a pagar e a receber
-                </p>
-            </div>
+            <PageHeader
+                title="Financeiro"
+                icon={DollarSign}
+                description="Gerencie contas a pagar e a receber"
+            />
 
             {/* Summary Cards */}
             <div className="grid gap-4 md:grid-cols-3">
@@ -251,7 +244,7 @@ export default function FinanceiroClientPage() {
                     </CardHeader>
                     <CardContent className="pt-0">
                         <div className="text-xl sm:text-2xl font-bold text-red-500">
-                            {formatCurrency(totalPagar.toString())}
+                            {formatCurrency(totalPagar)}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             {contasPagar?.data?.filter((c: ContaPagar) => c.status !== 'pago').length || 0} contas pendentes
@@ -265,7 +258,7 @@ export default function FinanceiroClientPage() {
                     </CardHeader>
                     <CardContent className="pt-0">
                         <div className="text-xl sm:text-2xl font-bold text-green-500">
-                            {formatCurrency(totalReceber.toString())}
+                            {formatCurrency(totalReceber)}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             {contasReceber?.data?.filter((c: ContaReceber) => c.status !== 'pago').length || 0} contas pendentes
@@ -279,7 +272,7 @@ export default function FinanceiroClientPage() {
                     </CardHeader>
                     <CardContent className="pt-0">
                         <div className={`text-xl sm:text-2xl font-bold ${totalReceber - totalPagar >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                            {formatCurrency((totalReceber - totalPagar).toString())}
+                            {formatCurrency(totalReceber - totalPagar)}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             Receitas - Despesas pendentes
@@ -289,9 +282,9 @@ export default function FinanceiroClientPage() {
             </div>
 
             <Tabs defaultValue="pagar" className="space-y-4">
-                <TabsList className="w-full sm:w-auto">
-                    <TabsTrigger value="pagar" className="flex-1 sm:flex-none text-xs sm:text-sm">Contas a Pagar</TabsTrigger>
-                    <TabsTrigger value="receber" className="flex-1 sm:flex-none text-xs sm:text-sm">Contas a Receber</TabsTrigger>
+                <TabsList>
+                    <TabsTrigger value="pagar" className="text-xs sm:text-sm">Contas a Pagar</TabsTrigger>
+                    <TabsTrigger value="receber" className="text-xs sm:text-sm">Contas a Receber</TabsTrigger>
                 </TabsList>
 
                 {/* Contas a Pagar */}
@@ -299,176 +292,147 @@ export default function FinanceiroClientPage() {
                     <Card>
                         <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <CardTitle>Contas a Pagar</CardTitle>
-                            <Dialog open={isOpenPagar} onOpenChange={setIsOpenPagar}>
-                                <DialogTrigger asChild>
+                            <FormModal
+                                isOpen={isOpenPagar}
+                                onOpenChange={setIsOpenPagar}
+                                title="Nova Conta a Pagar"
+                                description="Adicione uma nova despesa"
+                                isSubmitting={createContaPagar.isPending}
+                                onSubmit={(e) => { e.preventDefault(); createContaPagar.mutate(formPagar); }}
+                                trigger={
                                     <Button className="w-full sm:w-auto">
                                         <Plus className="mr-2 h-4 w-4" /> <span className="hidden sm:inline">Nova </span>Conta
                                     </Button>
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <form onSubmit={(e) => { e.preventDefault(); createContaPagar.mutate(formPagar); }}>
-                                        <DialogHeader>
-                                            <DialogTitle>Nova Conta a Pagar</DialogTitle>
-                                            <DialogDescription>
-                                                Adicione uma nova despesa
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="grid gap-4 py-4">
-                                            <div className="space-y-2">
-                                                <Label>Descrição *</Label>
-                                                <Input
-                                                    value={formPagar.descricao}
-                                                    onChange={(e) => setFormPagar({ ...formPagar, descricao: e.target.value })}
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div className="space-y-2">
-                                                    <Label>Valor *</Label>
-                                                    <Input
-                                                        type="number"
-                                                        step="0.01"
-                                                        value={formPagar.valor}
-                                                        onChange={(e) => setFormPagar({ ...formPagar, valor: e.target.value })}
-                                                        required
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Vencimento *</Label>
-                                                    <Input
-                                                        type="date"
-                                                        value={formPagar.dataVencimento}
-                                                        onChange={(e) => setFormPagar({ ...formPagar, dataVencimento: e.target.value })}
-                                                        required
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                <div className="space-y-2">
-                                                    <Label>Fornecedor</Label>
-                                                    <Select
-                                                        value={formPagar.fornecedorId}
-                                                        onValueChange={(v) => setFormPagar({ ...formPagar, fornecedorId: v })}
-                                                    >
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Selecione..." />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {fornecedores?.data?.map((f: Fornecedor) => (
-                                                                <SelectItem key={f.id} value={f.id.toString()}>
-                                                                    {f.nome}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <Label>Categoria</Label>
-                                                    <Input
-                                                        value={formPagar.categoria}
-                                                        onChange={(e) => setFormPagar({ ...formPagar, categoria: e.target.value })}
-                                                        placeholder="Ex: Aluguel, Luz..."
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <DialogFooter>
-                                            <Button type="submit" disabled={createContaPagar.isPending}>
-                                                {createContaPagar.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                Criar
-                                            </Button>
-                                        </DialogFooter>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
+                                }
+                            >
+                                <div className="space-y-2">
+                                    <Label>Descrição *</Label>
+                                    <Input
+                                        value={formPagar.descricao}
+                                        onChange={(e) => setFormPagar({ ...formPagar, descricao: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Valor *</Label>
+                                        <Input
+                                            type="number"
+                                            step="0.01"
+                                            value={formPagar.valor}
+                                            onChange={(e) => setFormPagar({ ...formPagar, valor: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Vencimento *</Label>
+                                        <Input
+                                            type="date"
+                                            value={formPagar.dataVencimento}
+                                            onChange={(e) => setFormPagar({ ...formPagar, dataVencimento: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Fornecedor</Label>
+                                        <Select
+                                            value={formPagar.fornecedorId}
+                                            onValueChange={(v) => setFormPagar({ ...formPagar, fornecedorId: v })}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Selecione..." />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {fornecedoresData.map((f) => (
+                                                    <SelectItem key={f.id} value={f.id.toString()}>
+                                                        {f.nome}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Categoria</Label>
+                                        <Input
+                                            value={formPagar.categoria}
+                                            onChange={(e) => setFormPagar({ ...formPagar, categoria: e.target.value })}
+                                            placeholder="Ex: Aluguel, Luz..."
+                                        />
+                                    </div>
+                                </div>
+                            </FormModal>
                         </CardHeader>
                         <CardContent className="px-2 sm:px-6">
                             <div className="overflow-x-auto -mx-2 sm:mx-0">
-                                {loadingPagar ? (
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Descrição</TableHead>
-                                                <TableHead className="hidden md:table-cell">Fornecedor</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
-                                                <TableHead className="text-right">Valor</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Status</TableHead>
-                                                <TableHead className="text-right w-[70px]">Ações</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {Array.from({ length: 5 }).map((_, i) => (
-                                                <TableRow key={i} className="text-xs sm:text-sm">
-                                                    <TableCell className="max-w-[100px] sm:max-w-none p-2 sm:p-4"><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                                    <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-[150px]" /></TableCell>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="min-w-[120px]">Descrição</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-[100px]">Fornecedor</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-[90px]">Vencimento</TableHead>
+                                            <TableHead className="hidden sm:table-cell text-right min-w-[80px]">Valor</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-[70px]">Status</TableHead>
+                                            <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {loadingPagar ? (
+                                            Array.from({ length: 5 }).map((_, i) => (
+                                                <TableRow key={i}>
+                                                    <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[150px]" /></TableCell>
                                                     <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
-                                                    <TableCell className="text-right flex justify-end p-2 sm:p-4"><Skeleton className="h-4 w-[80px]" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell text-right"><Skeleton className="h-4 w-[80px] ml-auto" /></TableCell>
                                                     <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
-                                                    <TableCell className="text-right p-2 sm:p-4"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                                    <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                                 </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                ) : (
-                                    <Table>
-                                        <TableHeader>
+                                            ))
+                                        ) : contasPagar?.data?.length === 0 ? (
                                             <TableRow>
-                                                <TableHead>Descrição</TableHead>
-                                                <TableHead className="hidden md:table-cell">Fornecedor</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
-                                                <TableHead className="text-right">Valor</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Status</TableHead>
-                                                <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                                    Nenhuma conta encontrada
+                                                </TableCell>
                                             </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {contasPagar?.data?.length === 0 ? (
-                                                <TableRow>
-                                                    <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                                        Nenhuma conta encontrada
+                                        ) : (
+                                            contasPagar?.data?.map((conta: ContaPagar) => (
+                                                <TableRow key={conta.id}>
+                                                    <TableCell className="font-medium max-w-[80px] truncate" title={conta.descricao}>
+                                                        {conta.descricao}
                                                     </TableCell>
-                                                </TableRow>
-                                            ) : (
-                                                contasPagar?.data?.map((conta: ContaPagar) => (
-                                                    <TableRow key={conta.id} className="text-xs sm:text-sm">
-                                                        <TableCell className="font-medium max-w-[80px] truncate p-2 sm:p-4" title={conta.descricao}>{conta.descricao}</TableCell>
-                                                        <TableCell className="hidden md:table-cell">{conta.fornecedor?.nome || '-'}</TableCell>
-                                                        <TableCell className="hidden sm:table-cell">{formatDate(conta.dataVencimento)}</TableCell>
-                                                        <TableCell className="text-right p-2 sm:p-4">{formatCurrency(conta.valor)}</TableCell>
-                                                        <TableCell className="hidden sm:table-cell">{getStatusBadge(conta.status)}</TableCell>
-                                                        <TableCell className="text-right p-1">
-                                                            <div className="flex justify-end gap-0">
-                                                                {conta.status !== 'pago' && (
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        className="h-8 w-8"
-                                                                        onClick={() => pagarConta.mutate(conta.id)}
-                                                                        title="Marcar como pago"
-                                                                    >
-                                                                        <Check className="h-3.5 w-3.5 text-green-500" />
-                                                                    </Button>
-                                                                )}
+                                                    <TableCell className="hidden sm:table-cell max-w-[80px] truncate" title={conta.fornecedor?.nome || undefined}>{conta.fornecedor?.nome || '-'}</TableCell>
+                                                    <TableCell className="hidden sm:table-cell">{formatDate(conta.dataVencimento)}</TableCell>
+                                                    <TableCell className="hidden sm:table-cell text-right">{formatCurrency(conta.valor)}</TableCell>
+                                                    <TableCell className="hidden sm:table-cell">{getStatusBadge(conta.status)}</TableCell>
+                                                    <TableCell className="text-right p-1">
+                                                        <div className="flex justify-end gap-0">
+                                                            {conta.status !== 'pago' && (
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="icon"
                                                                     className="h-8 w-8"
-                                                                    onClick={() => {
-                                                                        if (confirm('Deseja remover esta conta?')) {
-                                                                            deletePagar.mutate(conta.id);
-                                                                        }
-                                                                    }}
+                                                                    onClick={() => pagarConta.mutate(conta.id)}
+                                                                    title="Marcar como pago"
                                                                 >
-                                                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                                    <Check className="h-3.5 w-3.5 text-green-500" />
                                                                 </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                )}
+                                                            )}
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8"
+                                                                onClick={() => handleDeleteClick('pagar', conta.id)}
+                                                            >
+                                                                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
                             </div>
                         </CardContent>
                     </Card>
@@ -482,96 +446,88 @@ export default function FinanceiroClientPage() {
                         </CardHeader>
                         <CardContent className="px-2 sm:px-6">
                             <div className="overflow-x-auto -mx-2 sm:mx-0">
-                                {loadingReceber ? (
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Cliente</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Venda</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
-                                                <TableHead className="text-right">Valor</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Status</TableHead>
-                                                <TableHead className="text-right w-[70px]">Ações</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {Array.from({ length: 5 }).map((_, i) => (
-                                                <TableRow key={i} className="text-xs sm:text-sm">
-                                                    <TableCell className="max-w-[100px] sm:max-w-none p-2 sm:p-4"><Skeleton className="h-4 w-[120px]" /></TableCell>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="min-w-[120px]">Cliente</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-[60px]">Venda</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-[90px]">Vencimento</TableHead>
+                                            <TableHead className="hidden sm:table-cell text-right min-w-[80px]">Valor</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-[70px]">Status</TableHead>
+                                            <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {loadingReceber ? (
+                                            Array.from({ length: 5 }).map((_, i) => (
+                                                <TableRow key={i}>
+                                                    <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
                                                     <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[60px]" /></TableCell>
                                                     <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
-                                                    <TableCell className="text-right flex justify-end p-2 sm:p-4"><Skeleton className="h-4 w-[80px]" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell text-right"><Skeleton className="h-4 w-[80px] ml-auto" /></TableCell>
                                                     <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
-                                                    <TableCell className="text-right p-2 sm:p-4"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
+                                                    <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                                 </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                ) : (
-                                    <Table>
-                                        <TableHeader>
+                                            ))
+                                        ) : contasReceber?.data?.length === 0 ? (
                                             <TableRow>
-                                                <TableHead>Cliente</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Venda</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Vencimento</TableHead>
-                                                <TableHead className="text-right">Valor</TableHead>
-                                                <TableHead className="hidden sm:table-cell">Status</TableHead>
-                                                <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                                                    Nenhuma conta encontrada
+                                                </TableCell>
                                             </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {contasReceber?.data?.length === 0 ? (
-                                                <TableRow>
-                                                    <TableCell colSpan={6} className="text-center text-muted-foreground">
-                                                        Nenhuma conta encontrada
+                                        ) : (
+                                            contasReceber?.data?.map((conta: ContaReceber) => (
+                                                <TableRow key={conta.id}>
+                                                    <TableCell className="font-medium max-w-[80px] truncate" title={conta.cliente?.nome}>
+                                                        {conta.cliente?.nome || '-'}
                                                     </TableCell>
-                                                </TableRow>
-                                            ) : (
-                                                contasReceber?.data?.map((conta: ContaReceber) => (
-                                                    <TableRow key={conta.id} className="text-xs sm:text-sm">
-                                                        <TableCell className="font-medium max-w-[80px] truncate p-2 sm:p-4" title={conta.cliente?.nome}>{conta.cliente?.nome || '-'}</TableCell>
-                                                        <TableCell className="hidden sm:table-cell">{conta.venda ? `#${conta.venda.id}` : '-'}</TableCell>
-                                                        <TableCell className="hidden sm:table-cell">{formatDate(conta.dataVencimento)}</TableCell>
-                                                        <TableCell className="text-right p-2 sm:p-4">{formatCurrency(conta.valor)}</TableCell>
-                                                        <TableCell className="hidden sm:table-cell">{getStatusBadge(conta.status)}</TableCell>
-                                                        <TableCell className="text-right p-1">
-                                                            <div className="flex justify-end gap-0">
-                                                                {conta.status !== 'pago' && (
-                                                                    <Button
-                                                                        variant="ghost"
-                                                                        size="icon"
-                                                                        className="h-8 w-8"
-                                                                        onClick={() => receberConta.mutate(conta.id)}
-                                                                        title="Marcar como recebido"
-                                                                    >
-                                                                        <Check className="h-3.5 w-3.5 text-green-500" />
-                                                                    </Button>
-                                                                )}
+                                                    <TableCell className="hidden sm:table-cell">{conta.venda ? `#${conta.venda.id}` : '-'}</TableCell>
+                                                    <TableCell className="hidden sm:table-cell">{formatDate(conta.dataVencimento)}</TableCell>
+                                                    <TableCell className="hidden sm:table-cell text-right">{formatCurrency(conta.valor)}</TableCell>
+                                                    <TableCell className="hidden sm:table-cell">{getStatusBadge(conta.status)}</TableCell>
+                                                    <TableCell className="text-right p-1">
+                                                        <div className="flex justify-end gap-0">
+                                                            {conta.status !== 'pago' && (
                                                                 <Button
                                                                     variant="ghost"
                                                                     size="icon"
                                                                     className="h-8 w-8"
-                                                                    onClick={() => {
-                                                                        if (confirm('Deseja remover esta conta?')) {
-                                                                            deleteReceber.mutate(conta.id);
-                                                                        }
-                                                                    }}
+                                                                    onClick={() => receberConta.mutate(conta.id)}
+                                                                    title="Marcar como recebido"
                                                                 >
-                                                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                                    <Check className="h-3.5 w-3.5 text-green-500" />
                                                                 </Button>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            )}
-                                        </TableBody>
-                                    </Table>
-                                )}
+                                                            )}
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="h-8 w-8"
+                                                                onClick={() => handleDeleteClick('receber', conta.id)}
+                                                            >
+                                                                <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                                            </Button>
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        )}
+                                    </TableBody>
+                                </Table>
                             </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
             </Tabs>
+
+            <ConfirmDialog
+                open={confirmOpen}
+                onOpenChange={setConfirmOpen}
+                title="Remover conta"
+                message="Tem certeza que deseja remover esta conta? Esta ação não pode ser desfeita."
+                confirmText="Remover"
+                onConfirm={handleConfirm}
+                isLoading={confirmLoading}
+            />
         </div>
     );
 }

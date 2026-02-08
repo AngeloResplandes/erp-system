@@ -6,21 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -37,7 +28,7 @@ import {
     ChevronsUpDown,
     Loader2,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, formatCurrency } from '@/lib/utils';
 import {
     Command,
     CommandEmpty,
@@ -53,30 +44,29 @@ import {
 } from '@/components/ui/popover';
 import { toast } from 'sonner';
 
-interface Produto {
+import { PageHeader } from '@/components/page-header';
+import { SearchInput } from '@/components/search-input';
+import type { Produto, Cliente, CartItem, FormaPagamento } from '@/types';
+
+// Tipo simplificado de produto para o PDV
+interface ProdutoPDV {
     id: number;
     nome: string;
     precoVenda: string;
     estoqueAtual: number;
 }
 
-interface Cliente {
+// Tipo simplificado de cliente
+interface ClientePDV {
     id: number;
     nome: string;
 }
 
-interface CartItem {
-    produto: Produto;
-    quantidade: number;
-    precoUnitario: number;
-    desconto: number;
-}
-
 const formasPagamento = [
-    { value: 'dinheiro', label: 'Dinheiro', icon: Banknote },
-    { value: 'pix', label: 'PIX', icon: QrCode },
-    { value: 'cartao_credito', label: 'Cartão Crédito', icon: CreditCard },
-    { value: 'cartao_debito', label: 'Cartão Débito', icon: CreditCard },
+    { value: 'dinheiro' as FormaPagamento, label: 'Dinheiro', icon: Banknote },
+    { value: 'pix' as FormaPagamento, label: 'PIX', icon: QrCode },
+    { value: 'cartao_credito' as FormaPagamento, label: 'Cartão Crédito', icon: CreditCard },
+    { value: 'cartao_debito' as FormaPagamento, label: 'Cartão Débito', icon: CreditCard },
 ];
 
 export default function VendasClientPage() {
@@ -90,6 +80,7 @@ export default function VendasClientPage() {
 
     const queryClient = useQueryClient();
 
+    // Query: Produtos
     const { data: produtos, isLoading: loadingProducts } = useQuery({
         queryKey: ['produtos', search],
         queryFn: async () => {
@@ -98,6 +89,7 @@ export default function VendasClientPage() {
         },
     });
 
+    // Query: Clientes
     const { data: clientes } = useQuery({
         queryKey: ['clientes-list', searchClient],
         queryFn: async () => {
@@ -106,6 +98,7 @@ export default function VendasClientPage() {
         },
     });
 
+    // Mutation: Criar venda
     const createSaleMutation = useMutation({
         mutationFn: async () => {
             const res = await fetch('/api/vendas', {
@@ -130,17 +123,19 @@ export default function VendasClientPage() {
             queryClient.invalidateQueries({ queryKey: ['produtos'] });
             queryClient.invalidateQueries({ queryKey: ['vendas'] });
             toast.success('Venda realizada com sucesso!');
-            setCart([]);
-            setSelectedCliente('');
-            setFormaPagamento('');
-            setDesconto(0);
+            resetCart();
         },
-        onError: () => {
-            toast.error('Erro ao realizar venda');
-        },
+        onError: () => toast.error('Erro ao realizar venda'),
     });
 
-    const addToCart = (produto: Produto) => {
+    const resetCart = () => {
+        setCart([]);
+        setSelectedCliente('');
+        setFormaPagamento('');
+        setDesconto(0);
+    };
+
+    const addToCart = (produto: ProdutoPDV) => {
         const existing = cart.find((item) => item.produto.id === produto.id);
         if (existing) {
             if (existing.quantidade >= produto.estoqueAtual) {
@@ -162,7 +157,12 @@ export default function VendasClientPage() {
             setCart([
                 ...cart,
                 {
-                    produto,
+                    produto: {
+                        id: produto.id,
+                        nome: produto.nome,
+                        precoVenda: produto.precoVenda,
+                        estoqueAtual: produto.estoqueAtual,
+                    },
                     quantidade: 1,
                     precoUnitario: parseFloat(produto.precoVenda),
                     desconto: 0,
@@ -197,41 +197,29 @@ export default function VendasClientPage() {
         0
     );
     const total = subtotal - desconto;
-
-    const formatCurrency = (value: number) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(value);
-    };
-
     const canFinalize = cart.length > 0 && formaPagamento;
+
+    const produtosData: ProdutoPDV[] = produtos?.data || [];
+    const clientesData: ClientePDV[] = clientes?.data || [];
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                    <ShoppingCart className="h-8 w-8" /> PDV - Ponto de Venda
-                </h1>
-                <p className="text-muted-foreground">
-                    Realize vendas de forma rápida e eficiente
-                </p>
-            </div>
+            <PageHeader
+                title="PDV - Ponto de Venda"
+                icon={ShoppingCart}
+                description="Realize vendas de forma rápida e eficiente"
+            />
 
             <div className="grid lg:grid-cols-3 gap-6">
                 {/* Products List */}
                 <div className="lg:col-span-2 space-y-4">
                     <Card>
                         <CardHeader className="pb-3">
-                            <div className="relative">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    placeholder="Buscar produtos..."
-                                    className="pl-8"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </div>
+                            <SearchInput
+                                value={search}
+                                onChange={setSearch}
+                                placeholder="Buscar produtos..."
+                            />
                         </CardHeader>
                         <CardContent>
                             {loadingProducts ? (
@@ -242,7 +230,7 @@ export default function VendasClientPage() {
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto">
-                                    {produtos?.data?.map((produto: Produto) => (
+                                    {produtosData.map((produto) => (
                                         <button
                                             key={produto.id}
                                             onClick={() => addToCart(produto)}
@@ -253,7 +241,7 @@ export default function VendasClientPage() {
                                                 {produto.nome}
                                             </div>
                                             <div className="text-lg font-bold text-primary">
-                                                {formatCurrency(parseFloat(produto.precoVenda))}
+                                                {formatCurrency(produto.precoVenda)}
                                             </div>
                                             <div className="text-xs text-muted-foreground">
                                                 Estoque: {produto.estoqueAtual}
@@ -287,7 +275,7 @@ export default function VendasClientPage() {
                                             className="w-full justify-between"
                                         >
                                             {selectedCliente
-                                                ? clientes?.data?.find((cliente: Cliente) => cliente.id.toString() === selectedCliente)?.nome
+                                                ? clientesData.find((c) => c.id.toString() === selectedCliente)?.nome
                                                 : "Selecione um cliente..."}
                                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                         </Button>
@@ -302,7 +290,7 @@ export default function VendasClientPage() {
                                             <CommandList>
                                                 <CommandEmpty>Nenhum cliente encontrado.</CommandEmpty>
                                                 <CommandGroup>
-                                                    {clientes?.data?.map((cliente: Cliente) => (
+                                                    {clientesData.map((cliente) => (
                                                         <CommandItem
                                                             key={cliente.id}
                                                             value={cliente.id.toString()}
