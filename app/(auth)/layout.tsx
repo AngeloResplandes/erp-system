@@ -8,7 +8,7 @@ export default function AuthLayout({
 }) {
     return (
         <AuthProvider>
-            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted">
+            <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-background to-muted">
                 {children}
             </div>
             <Toaster />

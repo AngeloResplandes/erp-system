@@ -226,23 +226,23 @@ export default function FornecedoresClientPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="min-w-[140px]">Nome</TableHead>
-                                    <TableHead className="hidden sm:table-cell min-w-[120px]">CNPJ</TableHead>
-                                    <TableHead className="hidden sm:table-cell min-w-[140px]">Email</TableHead>
-                                    <TableHead className="hidden sm:table-cell min-w-[100px]">Telefone</TableHead>
-                                    <TableHead className="min-w-[60px]">Status</TableHead>
-                                    <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                    <TableHead className="min-w-35">Nome</TableHead>
+                                    <TableHead className="hidden sm:table-cell min-w-32">CNPJ</TableHead>
+                                    <TableHead className="hidden sm:table-cell min-w-35">Email</TableHead>
+                                    <TableHead className="hidden sm:table-cell min-w-28">Telefone</TableHead>
+                                    <TableHead className="min-w-16">Status</TableHead>
+                                    <TableHead className="text-right w-20">Ações</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {isLoading ? (
                                     Array.from({ length: 5 }).map((_, i) => (
                                         <TableRow key={i}>
-                                            <TableCell><Skeleton className="h-4 w-[180px]" /></TableCell>
-                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[140px]" /></TableCell>
-                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[180px]" /></TableCell>
-                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                            <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-45" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-35" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-45" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-30" /></TableCell>
+                                            <TableCell><Skeleton className="h-6 w-15 rounded-full" /></TableCell>
                                             <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                         </TableRow>
                                     ))
@@ -255,11 +255,11 @@ export default function FornecedoresClientPage() {
                                 ) : (
                                     fornecedores.map((fornecedor) => (
                                         <TableRow key={fornecedor.id}>
-                                            <TableCell className="font-medium max-w-[80px] truncate" title={fornecedor.nome}>
+                                            <TableCell className="font-medium max-w-20 truncate" title={fornecedor.nome}>
                                                 {fornecedor.nome}
                                             </TableCell>
                                             <TableCell className="hidden sm:table-cell">{fornecedor.cnpj || '-'}</TableCell>
-                                            <TableCell className="hidden sm:table-cell max-w-[80px] truncate" title={fornecedor.email || undefined}>{fornecedor.email || '-'}</TableCell>
+                                            <TableCell className="hidden sm:table-cell max-w-20 truncate" title={fornecedor.email || undefined}>{fornecedor.email || '-'}</TableCell>
                                             <TableCell className="hidden sm:table-cell">{fornecedor.telefone || '-'}</TableCell>
                                             <TableCell>
                                                 <Badge variant={fornecedor.ativo ? 'default' : 'secondary'}>

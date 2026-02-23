@@ -51,10 +51,10 @@ export default function ConfiguracoesClientPage() {
                     <Skeleton className="h-4 w-64" />
                 </div>
                 <div className="grid gap-6 md:grid-cols-2">
-                    <Skeleton className="h-[300px]" />
-                    <Skeleton className="h-[300px]" />
-                    <Skeleton className="h-[150px]" />
-                    <Skeleton className="h-[200px]" />
+                    <Skeleton className="h-75" />
+                    <Skeleton className="h-75" />
+                    <Skeleton className="h-37.5" />
+                    <Skeleton className="h-50" />
                 </div>
             </div>
         );

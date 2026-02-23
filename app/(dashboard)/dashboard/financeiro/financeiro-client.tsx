@@ -369,23 +369,23 @@ export default function FinanceiroClientPage() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead className="min-w-[120px]">Descrição</TableHead>
-                                            <TableHead className="hidden sm:table-cell min-w-[100px]">Fornecedor</TableHead>
-                                            <TableHead className="hidden sm:table-cell min-w-[90px]">Vencimento</TableHead>
-                                            <TableHead className="hidden sm:table-cell text-right min-w-[80px]">Valor</TableHead>
-                                            <TableHead className="hidden sm:table-cell min-w-[70px]">Status</TableHead>
-                                            <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                            <TableHead className="min-w-30">Descrição</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-25">Fornecedor</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-22.5">Vencimento</TableHead>
+                                            <TableHead className="hidden sm:table-cell text-right min-w-20">Valor</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-17.5">Status</TableHead>
+                                            <TableHead className="text-right w-17">Ações</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {loadingPagar ? (
                                             Array.from({ length: 5 }).map((_, i) => (
                                                 <TableRow key={i}>
-                                                    <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[150px]" /></TableCell>
-                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
-                                                    <TableCell className="hidden sm:table-cell text-right"><Skeleton className="h-4 w-[80px] ml-auto" /></TableCell>
-                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
+                                                    <TableCell><Skeleton className="h-4 w-30" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-37.5" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-25" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell text-right"><Skeleton className="h-4 w-20 ml-auto" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
                                                     <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                                 </TableRow>
                                             ))
@@ -398,10 +398,10 @@ export default function FinanceiroClientPage() {
                                         ) : (
                                             contasPagar?.data?.map((conta: ContaPagar) => (
                                                 <TableRow key={conta.id}>
-                                                    <TableCell className="font-medium max-w-[80px] truncate" title={conta.descricao}>
+                                                    <TableCell className="font-medium max-w-20 truncate" title={conta.descricao}>
                                                         {conta.descricao}
                                                     </TableCell>
-                                                    <TableCell className="hidden sm:table-cell max-w-[80px] truncate" title={conta.fornecedor?.nome || undefined}>{conta.fornecedor?.nome || '-'}</TableCell>
+                                                    <TableCell className="hidden sm:table-cell max-w-20 truncate" title={conta.fornecedor?.nome || undefined}>{conta.fornecedor?.nome || '-'}</TableCell>
                                                     <TableCell className="hidden sm:table-cell">{formatDate(conta.dataVencimento)}</TableCell>
                                                     <TableCell className="hidden sm:table-cell text-right">{formatCurrency(conta.valor)}</TableCell>
                                                     <TableCell className="hidden sm:table-cell">{getStatusBadge(conta.status)}</TableCell>
@@ -449,23 +449,23 @@ export default function FinanceiroClientPage() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
-                                            <TableHead className="min-w-[120px]">Cliente</TableHead>
-                                            <TableHead className="hidden sm:table-cell min-w-[60px]">Venda</TableHead>
-                                            <TableHead className="hidden sm:table-cell min-w-[90px]">Vencimento</TableHead>
-                                            <TableHead className="hidden sm:table-cell text-right min-w-[80px]">Valor</TableHead>
-                                            <TableHead className="hidden sm:table-cell min-w-[70px]">Status</TableHead>
-                                            <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                            <TableHead className="min-w-30">Cliente</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-15">Venda</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-22.5">Vencimento</TableHead>
+                                            <TableHead className="hidden sm:table-cell text-right min-w-20">Valor</TableHead>
+                                            <TableHead className="hidden sm:table-cell min-w-17.5">Status</TableHead>
+                                            <TableHead className="text-right w-17.5">Ações</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {loadingReceber ? (
                                             Array.from({ length: 5 }).map((_, i) => (
                                                 <TableRow key={i}>
-                                                    <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[60px]" /></TableCell>
-                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
-                                                    <TableCell className="hidden sm:table-cell text-right"><Skeleton className="h-4 w-[80px] ml-auto" /></TableCell>
-                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-[80px] rounded-full" /></TableCell>
+                                                    <TableCell><Skeleton className="h-4 w-30" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-15" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-25" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell text-right"><Skeleton className="h-4 w-20 ml-auto" /></TableCell>
+                                                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
                                                     <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                                 </TableRow>
                                             ))
@@ -478,7 +478,7 @@ export default function FinanceiroClientPage() {
                                         ) : (
                                             contasReceber?.data?.map((conta: ContaReceber) => (
                                                 <TableRow key={conta.id}>
-                                                    <TableCell className="font-medium max-w-[80px] truncate" title={conta.cliente?.nome}>
+                                                    <TableCell className="font-medium max-w-20 truncate" title={conta.cliente?.nome}>
                                                         {conta.cliente?.nome || '-'}
                                                     </TableCell>
                                                     <TableCell className="hidden sm:table-cell">{conta.venda ? `#${conta.venda.id}` : '-'}</TableCell>

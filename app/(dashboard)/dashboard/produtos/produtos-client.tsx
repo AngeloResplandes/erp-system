@@ -304,23 +304,23 @@ export default function ProdutosClientPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="min-w-[140px]">Produto</TableHead>
-                                    <TableHead className="hidden sm:table-cell min-w-[100px]">Categoria</TableHead>
-                                    <TableHead className="hidden sm:table-cell text-right min-w-[80px]">Preço</TableHead>
-                                    <TableHead className="hidden sm:table-cell text-center min-w-[70px]">Estoque</TableHead>
-                                    <TableHead className="min-w-[60px]">Status</TableHead>
-                                    <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                    <TableHead className="min-w-35">Produto</TableHead>
+                                    <TableHead className="hidden sm:table-cell min-w-25">Categoria</TableHead>
+                                    <TableHead className="hidden sm:table-cell text-right min-w-20">Preço</TableHead>
+                                    <TableHead className="hidden sm:table-cell text-center min-w-17.5">Estoque</TableHead>
+                                    <TableHead className="min-w-15">Status</TableHead>
+                                    <TableHead className="text-right w-17.5">Ações</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {isLoading ? (
                                     Array.from({ length: 5 }).map((_, i) => (
                                         <TableRow key={i}>
-                                            <TableCell><Skeleton className="h-4 w-[180px]" /></TableCell>
-                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                            <TableCell className="hidden sm:table-cell text-right"><Skeleton className="h-4 w-[80px] ml-auto" /></TableCell>
-                                            <TableCell className="hidden sm:table-cell text-center"><Skeleton className="h-4 w-[60px] mx-auto" /></TableCell>
-                                            <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-45" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-30" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell text-right"><Skeleton className="h-4 w-20 ml-auto" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell text-center"><Skeleton className="h-4 w-15 mx-auto" /></TableCell>
+                                            <TableCell><Skeleton className="h-6 w-15 rounded-full" /></TableCell>
                                             <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                         </TableRow>
                                     ))
@@ -333,10 +333,10 @@ export default function ProdutosClientPage() {
                                 ) : (
                                     produtos.map((produto) => (
                                         <TableRow key={produto.id}>
-                                            <TableCell className="font-medium max-w-[80px] truncate" title={produto.nome}>
+                                            <TableCell className="font-medium max-w-20 truncate" title={produto.nome}>
                                                 {produto.nome}
                                             </TableCell>
-                                            <TableCell className="hidden sm:table-cell max-w-[80px] truncate">{produto.categoria?.nome || '-'}</TableCell>
+                                            <TableCell className="hidden sm:table-cell max-w-20 truncate">{produto.categoria?.nome || '-'}</TableCell>
                                             <TableCell className="hidden sm:table-cell text-right">
                                                 {formatCurrency(produto.precoVenda)}
                                             </TableCell>

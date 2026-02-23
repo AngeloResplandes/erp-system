@@ -258,23 +258,23 @@ export default function ClientesClientPage() {
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="min-w-[120px]">Nome</TableHead>
-                                    <TableHead className="hidden sm:table-cell min-w-[150px]">Email</TableHead>
-                                    <TableHead className="hidden sm:table-cell min-w-[100px]">Telefone</TableHead>
-                                    <TableHead className="hidden sm:table-cell min-w-[80px]">Cidade/UF</TableHead>
-                                    <TableHead className="min-w-[60px]">Status</TableHead>
-                                    <TableHead className="text-right w-[70px]">Ações</TableHead>
+                                    <TableHead className="min-w-30">Nome</TableHead>
+                                    <TableHead className="hidden sm:table-cell min-w-36">Email</TableHead>
+                                    <TableHead className="hidden sm:table-cell min-w-28">Telefone</TableHead>
+                                    <TableHead className="hidden sm:table-cell min-w-20">Cidade/UF</TableHead>
+                                    <TableHead className="min-w-16">Status</TableHead>
+                                    <TableHead className="text-right w-20">Ações</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {isLoading ? (
                                     Array.from({ length: 5 }).map((_, i) => (
                                         <TableRow key={i}>
-                                            <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
-                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[200px]" /></TableCell>
-                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[120px]" /></TableCell>
-                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-[100px]" /></TableCell>
-                                            <TableCell><Skeleton className="h-6 w-[60px] rounded-full" /></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-37.5" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-50" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-30" /></TableCell>
+                                            <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-25" /></TableCell>
+                                            <TableCell><Skeleton className="h-6 w-15 rounded-full" /></TableCell>
                                             <TableCell className="text-right"><Skeleton className="h-8 w-8 rounded-full ml-auto" /></TableCell>
                                         </TableRow>
                                     ))
@@ -287,12 +287,12 @@ export default function ClientesClientPage() {
                                 ) : (
                                     clientes.map((cliente) => (
                                         <TableRow key={cliente.id}>
-                                            <TableCell className="font-medium max-w-[80px] truncate" title={cliente.nome}>
+                                            <TableCell className="font-medium max-w-20 truncate" title={cliente.nome}>
                                                 {cliente.nome}
                                             </TableCell>
-                                            <TableCell className="hidden sm:table-cell max-w-[80px] truncate" title={cliente.email || undefined}>{cliente.email || '-'}</TableCell>
+                                            <TableCell className="hidden sm:table-cell max-w-20 truncate" title={cliente.email || undefined}>{cliente.email || '-'}</TableCell>
                                             <TableCell className="hidden sm:table-cell">{cliente.telefone || '-'}</TableCell>
-                                            <TableCell className="hidden sm:table-cell max-w-[80px] truncate">
+                                            <TableCell className="hidden sm:table-cell max-w-20 truncate">
                                                 {cliente.cidade && cliente.estado
                                                     ? `${cliente.cidade}/${cliente.estado}`
                                                     : '-'}

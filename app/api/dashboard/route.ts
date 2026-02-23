@@ -165,7 +165,7 @@ export async function GET() {
             .orderBy(sql`SUM(${itensVenda.quantidade}) DESC`)
             .limit(5);
 
-        // Últimas 5 vendas
+        // Últimas 3 vendas
         const vendasRecentes = await db
             .select({
                 id: vendas.id,
@@ -177,7 +177,7 @@ export async function GET() {
             .from(vendas)
             .where(eq(vendas.status, 'finalizada'))
             .orderBy(sql`${vendas.dataVenda} DESC`)
-            .limit(5);
+            .limit(3);
 
         // Buscar nomes dos clientes para as vendas recentes
         const vendasComClientes = await Promise.all(

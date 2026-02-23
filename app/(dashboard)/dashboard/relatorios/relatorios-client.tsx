@@ -98,7 +98,7 @@ export default function RelatoriosClientPage() {
                     </p>
                 </div>
                 <Select value={periodo} onValueChange={setPeriodo}>
-                    <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectTrigger className="w-full sm:w-45">
                         <SelectValue placeholder="Período" />
                     </SelectTrigger>
                     <SelectContent>
@@ -265,15 +265,15 @@ export default function RelatoriosClientPage() {
                         {isLoading ? (
                             <Skeleton className="h-64 w-full" />
                         ) : formasPagamentoData.length > 0 ? (
-                            <div className="flex flex-col sm:flex-row items-center gap-4">
-                                <ResponsiveContainer width="100%" height={160} className="sm:w-1/2">
+                            <div className="flex flex-col items-center gap-4">
+                                <ResponsiveContainer width="100%" height={180}>
                                     <PieChart>
                                         <Pie
                                             data={formasPagamentoData}
                                             cx="50%"
                                             cy="50%"
-                                            innerRadius={40}
-                                            outerRadius={65}
+                                            innerRadius={50}
+                                            outerRadius={80}
                                             paddingAngle={2}
                                             dataKey="value"
                                         >
@@ -292,17 +292,17 @@ export default function RelatoriosClientPage() {
                                         />
                                     </PieChart>
                                 </ResponsiveContainer>
-                                <div className="w-full sm:flex-1 space-y-2">
+                                <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2">
                                     {formasPagamentoData.map((item) => (
                                         <div key={item.name} className="flex items-center justify-between text-sm">
                                             <div className="flex items-center gap-2">
                                                 <div
-                                                    className="w-3 h-3 rounded-full"
+                                                    className="w-3 h-3 rounded-full shrink-0"
                                                     style={{ backgroundColor: item.color }}
                                                 />
                                                 <span>{item.name}</span>
                                             </div>
-                                            <span className="font-medium">{item.value}</span>
+                                            <span className="font-medium ml-1">{item.value}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -324,18 +324,18 @@ export default function RelatoriosClientPage() {
                         {isLoading ? (
                             <Skeleton className="h-64 w-full" />
                         ) : produtosMaisVendidos.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={200}>
-                                <BarChart data={produtosMaisVendidos} layout="vertical">
+                            <ResponsiveContainer width="100%" height={produtosMaisVendidos.length * 42 + 20}>
+                                <BarChart data={produtosMaisVendidos} layout="vertical" margin={{ left: 0, right: 16, top: 4, bottom: 4 }}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                                     <XAxis type="number" stroke="#888" fontSize={10} tick={{ fontSize: 10 }} />
                                     <YAxis
                                         type="category"
                                         dataKey="nome"
                                         stroke="#888"
-                                        fontSize={9}
-                                        tick={{ fontSize: 9 }}
-                                        width={80}
-                                        tickFormatter={(value) => value.length > 10 ? `${value.slice(0, 10)}...` : value}
+                                        fontSize={11}
+                                        tick={{ fontSize: 11 }}
+                                        width={140}
+                                        tickFormatter={(value) => value.length > 18 ? `${value.slice(0, 18)}...` : value}
                                     />
                                     <Tooltip
                                         contentStyle={{ backgroundColor: '#1f1f1f', border: '1px solid #333', color: '#fff' }}
