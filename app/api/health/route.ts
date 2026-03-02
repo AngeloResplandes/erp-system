@@ -5,7 +5,7 @@ import { sql } from 'drizzle-orm';
 export async function GET() {
     try {
         // Tenta executar uma query simples para verificar a conexão
-        await db.execute(sql`SELECT 1`);
+        await db.run(sql`SELECT 1`);
 
         return NextResponse.json({
             status: 'connected',

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { vendas, itensVenda, produtos } from '@/db/schema';
-import { eq, desc, sql } from 'drizzle-orm';
+import { eq, desc, sql, like } from 'drizzle-orm';
 import { getSession } from '@/lib/auth';
 import { vendaSchema } from '@/lib/validations';
 
@@ -9,6 +9,7 @@ import { vendaSchema } from '@/lib/validations';
 export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
+        const search = searchParams.get('search');
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '10');
         const offset = (page - 1) * limit;

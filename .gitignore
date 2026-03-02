@@ -38,4 +38,12 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# SQLite local database
+*.db
+*.db-shm
+*.db-wal
+
+# package-lock (usando bun)
+package-lock.json
 next-env.d.ts

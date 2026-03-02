@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { vendas, itensVenda, produtos, clientes, fornecedores } from '@/db/schema';
-import { sql, eq, gte, lte, and, desc } from 'drizzle-orm';
+import { sql, eq, and } from 'drizzle-orm';
 
 export async function GET(request: Request) {
     try {
@@ -20,27 +20,28 @@ export async function GET(request: Request) {
         dataInicial.setHours(0, 0, 0, 0);
 
         // Vendas mensais agrupadas por mês
+        const dataInicialUnix = Math.floor(dataInicial.getTime() / 1000);
         const vendasPorMes = await db
             .select({
-                ano: sql<number>`EXTRACT(YEAR FROM ${vendas.dataVenda})`,
-                mes: sql<number>`EXTRACT(MONTH FROM ${vendas.dataVenda})`,
+                ano: sql<number>`CAST(strftime('%Y', datetime(${vendas.dataVenda}, 'unixepoch')) AS INTEGER)`,
+                mes: sql<number>`CAST(strftime('%m', datetime(${vendas.dataVenda}, 'unixepoch')) AS INTEGER)`,
                 totalVendas: sql<number>`COUNT(*)`,
-                receita: sql<string>`COALESCE(SUM(${vendas.total}), 0)`,
+                receita: sql<string>`COALESCE(SUM(CAST(${vendas.total} AS REAL)), 0)`,
             })
             .from(vendas)
             .where(
                 and(
                     eq(vendas.status, 'finalizada'),
-                    gte(vendas.dataVenda, dataInicial)
+                    sql`${vendas.dataVenda} >= ${dataInicialUnix}`
                 )
             )
             .groupBy(
-                sql`EXTRACT(YEAR FROM ${vendas.dataVenda})`,
-                sql`EXTRACT(MONTH FROM ${vendas.dataVenda})`
+                sql`strftime('%Y', datetime(${vendas.dataVenda}, 'unixepoch'))`,
+                sql`strftime('%m', datetime(${vendas.dataVenda}, 'unixepoch'))`
             )
             .orderBy(
-                sql`EXTRACT(YEAR FROM ${vendas.dataVenda})`,
-                sql`EXTRACT(MONTH FROM ${vendas.dataVenda})`
+                sql`strftime('%Y', datetime(${vendas.dataVenda}, 'unixepoch'))`,
+                sql`strftime('%m', datetime(${vendas.dataVenda}, 'unixepoch'))`
             );
 
         // Formatar vendas mensais
@@ -64,7 +65,7 @@ export async function GET(request: Request) {
             .where(
                 and(
                     eq(vendas.status, 'finalizada'),
-                    gte(vendas.dataVenda, dataInicial)
+                    sql`${vendas.dataVenda} >= ${dataInicialUnix}`
                 )
             )
             .groupBy(itensVenda.produtoId, produtos.nome)
@@ -82,7 +83,7 @@ export async function GET(request: Request) {
             .where(
                 and(
                     eq(vendas.status, 'finalizada'),
-                    gte(vendas.dataVenda, dataInicial)
+                    sql`${vendas.dataVenda} >= ${dataInicialUnix}`
                 )
             )
             .groupBy(vendas.formaPagamento);
@@ -150,7 +151,7 @@ export async function GET(request: Request) {
             .where(
                 and(
                     eq(vendas.status, 'finalizada'),
-                    gte(vendas.dataVenda, dataInicial)
+                    sql`${vendas.dataVenda} >= ${dataInicialUnix}`
                 )
             );
         const vendasPeriodo = Number(vendasPeriodoResult[0]?.count) || 0;

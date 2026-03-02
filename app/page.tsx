@@ -102,7 +102,7 @@ export default function Home() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:mx-16 mb-16">
           {features.map((feature) => (
             <Card
               key={feature.title}

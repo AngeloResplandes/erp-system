@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { fornecedores } from '@/db/schema';
-import { eq, desc, like, or } from 'drizzle-orm';
+import { desc, like, or } from 'drizzle-orm';
 import { fornecedorSchema } from '@/lib/validations';
 
 // GET - List all suppliers
@@ -14,6 +14,7 @@ export async function GET(request: Request) {
         const offset = (page - 1) * limit;
 
         const data = await db.query.fornecedores.findMany({
+            where: search ? or(like(fornecedores.nome, `%${search}%`), like(fornecedores.email, `%${search}%`)) : undefined,
             orderBy: desc(fornecedores.criadoEm),
             limit,
             offset,

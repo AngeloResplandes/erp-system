@@ -1,22 +1,16 @@
-import { pgTable, serial, text, varchar, timestamp, boolean, decimal, integer, pgEnum, date, PgTable } from 'drizzle-orm/pg-core';
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 
-// Enums
-export const userRoleEnum = pgEnum('user_role', ['admin', 'gerente', 'vendedor']);
-export const vendaStatusEnum = pgEnum('venda_status', ['aberta', 'finalizada', 'cancelada']);
-export const formaPagamentoEnum = pgEnum('forma_pagamento', ['dinheiro', 'pix', 'cartao_credito', 'cartao_debito', 'boleto']);
-export const contaStatusEnum = pgEnum('conta_status', ['pendente', 'pago', 'atrasado', 'cancelado']);
-
 // ==================== USUARIOS ====================
-export const usuarios = pgTable('usuarios', {
-    id: serial('id').primaryKey(),
-    nome: varchar('nome', { length: 255 }).notNull(),
-    email: varchar('email', { length: 255 }).notNull().unique(),
+export const usuarios = sqliteTable('usuarios', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    nome: text('nome').notNull(),
+    email: text('email').notNull().unique(),
     senhaHash: text('senha_hash').notNull(),
-    role: userRoleEnum('role').notNull().default('vendedor'),
-    ativo: boolean('ativo').notNull().default(true),
-    criadoEm: timestamp('criado_em').notNull().defaultNow(),
-    atualizadoEm: timestamp('atualizado_em').notNull().defaultNow(),
+    role: text('role', { enum: ['admin', 'gerente', 'vendedor'] }).notNull().default('vendedor'),
+    ativo: integer('ativo', { mode: 'boolean' }).notNull().default(true),
+    criadoEm: integer('criado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+    atualizadoEm: integer('atualizado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
 export const usuariosRelations = relations(usuarios, ({ many }) => ({
@@ -24,19 +18,19 @@ export const usuariosRelations = relations(usuarios, ({ many }) => ({
 }));
 
 // ==================== CLIENTES ====================
-export const clientes = pgTable('clientes', {
-    id: serial('id').primaryKey(),
-    nome: varchar('nome', { length: 255 }).notNull(),
-    email: varchar('email', { length: 255 }),
-    telefone: varchar('telefone', { length: 20 }),
-    cpfCnpj: varchar('cpf_cnpj', { length: 18 }).unique(),
+export const clientes = sqliteTable('clientes', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    nome: text('nome').notNull(),
+    email: text('email'),
+    telefone: text('telefone'),
+    cpfCnpj: text('cpf_cnpj').unique(),
     endereco: text('endereco'),
-    cidade: varchar('cidade', { length: 100 }),
-    estado: varchar('estado', { length: 2 }),
-    cep: varchar('cep', { length: 9 }),
-    ativo: boolean('ativo').notNull().default(true),
-    criadoEm: timestamp('criado_em').notNull().defaultNow(),
-    atualizadoEm: timestamp('atualizado_em').notNull().defaultNow(),
+    cidade: text('cidade'),
+    estado: text('estado'),
+    cep: text('cep'),
+    ativo: integer('ativo', { mode: 'boolean' }).notNull().default(true),
+    criadoEm: integer('criado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+    atualizadoEm: integer('atualizado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
 export const clientesRelations = relations(clientes, ({ many }) => ({
@@ -45,11 +39,11 @@ export const clientesRelations = relations(clientes, ({ many }) => ({
 }));
 
 // ==================== CATEGORIAS ====================
-export const categorias = pgTable('categorias', {
-    id: serial('id').primaryKey(),
-    nome: varchar('nome', { length: 100 }).notNull(),
+export const categorias = sqliteTable('categorias', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    nome: text('nome').notNull(),
     descricao: text('descricao'),
-    criadoEm: timestamp('criado_em').notNull().defaultNow(),
+    criadoEm: integer('criado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
 export const categoriasRelations = relations(categorias, ({ many }) => ({
@@ -57,19 +51,19 @@ export const categoriasRelations = relations(categorias, ({ many }) => ({
 }));
 
 // ==================== PRODUTOS ====================
-export const produtos = pgTable('produtos', {
-    id: serial('id').primaryKey(),
-    nome: varchar('nome', { length: 255 }).notNull(),
+export const produtos = sqliteTable('produtos', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    nome: text('nome').notNull(),
     descricao: text('descricao'),
     categoriaId: integer('categoria_id').references(() => categorias.id),
-    precoCusto: decimal('preco_custo', { precision: 10, scale: 2 }).notNull().default('0'),
-    precoVenda: decimal('preco_venda', { precision: 10, scale: 2 }).notNull(),
+    precoCusto: text('preco_custo').notNull().default('0'),
+    precoVenda: text('preco_venda').notNull(),
     estoqueAtual: integer('estoque_atual').notNull().default(0),
     estoqueMinimo: integer('estoque_minimo').notNull().default(5),
-    codigoBarras: varchar('codigo_barras', { length: 50 }).unique(),
-    ativo: boolean('ativo').notNull().default(true),
-    criadoEm: timestamp('criado_em').notNull().defaultNow(),
-    atualizadoEm: timestamp('atualizado_em').notNull().defaultNow(),
+    codigoBarras: text('codigo_barras').unique(),
+    ativo: integer('ativo', { mode: 'boolean' }).notNull().default(true),
+    criadoEm: integer('criado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+    atualizadoEm: integer('atualizado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
 export const produtosRelations = relations(produtos, ({ one, many }) => ({
@@ -81,15 +75,15 @@ export const produtosRelations = relations(produtos, ({ one, many }) => ({
 }));
 
 // ==================== FORNECEDORES ====================
-export const fornecedores = pgTable('fornecedores', {
-    id: serial('id').primaryKey(),
-    nome: varchar('nome', { length: 255 }).notNull(),
-    cnpj: varchar('cnpj', { length: 18 }).unique(),
-    telefone: varchar('telefone', { length: 20 }),
-    email: varchar('email', { length: 255 }),
+export const fornecedores = sqliteTable('fornecedores', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    nome: text('nome').notNull(),
+    cnpj: text('cnpj').unique(),
+    telefone: text('telefone'),
+    email: text('email'),
     endereco: text('endereco'),
-    ativo: boolean('ativo').notNull().default(true),
-    criadoEm: timestamp('criado_em').notNull().defaultNow(),
+    ativo: integer('ativo', { mode: 'boolean' }).notNull().default(true),
+    criadoEm: integer('criado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
 export const fornecedoresRelations = relations(fornecedores, ({ many }) => ({
@@ -97,18 +91,18 @@ export const fornecedoresRelations = relations(fornecedores, ({ many }) => ({
 }));
 
 // ==================== VENDAS ====================
-export const vendas = pgTable('vendas', {
-    id: serial('id').primaryKey(),
+export const vendas = sqliteTable('vendas', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
     clienteId: integer('cliente_id').references(() => clientes.id),
     usuarioId: integer('usuario_id').references(() => usuarios.id).notNull(),
-    dataVenda: timestamp('data_venda').notNull().defaultNow(),
-    status: vendaStatusEnum('status').notNull().default('aberta'),
-    subtotal: decimal('subtotal', { precision: 10, scale: 2 }).notNull().default('0'),
-    desconto: decimal('desconto', { precision: 10, scale: 2 }).notNull().default('0'),
-    total: decimal('total', { precision: 10, scale: 2 }).notNull().default('0'),
-    formaPagamento: formaPagamentoEnum('forma_pagamento'),
+    dataVenda: integer('data_venda', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+    status: text('status', { enum: ['aberta', 'finalizada', 'cancelada'] }).notNull().default('aberta'),
+    subtotal: text('subtotal').notNull().default('0'),
+    desconto: text('desconto').notNull().default('0'),
+    total: text('total').notNull().default('0'),
+    formaPagamento: text('forma_pagamento', { enum: ['dinheiro', 'pix', 'cartao_credito', 'cartao_debito', 'boleto'] }),
     observacoes: text('observacoes'),
-    criadoEm: timestamp('criado_em').notNull().defaultNow(),
+    criadoEm: integer('criado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
 export const vendasRelations = relations(vendas, ({ one, many }) => ({
@@ -125,14 +119,14 @@ export const vendasRelations = relations(vendas, ({ one, many }) => ({
 }));
 
 // ==================== ITENS VENDA ====================
-export const itensVenda = pgTable('itens_venda', {
-    id: serial('id').primaryKey(),
+export const itensVenda = sqliteTable('itens_venda', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
     vendaId: integer('venda_id').references(() => vendas.id).notNull(),
     produtoId: integer('produto_id').references(() => produtos.id).notNull(),
     quantidade: integer('quantidade').notNull(),
-    precoUnitario: decimal('preco_unitario', { precision: 10, scale: 2 }).notNull(),
-    desconto: decimal('desconto', { precision: 10, scale: 2 }).notNull().default('0'),
-    subtotal: decimal('subtotal', { precision: 10, scale: 2 }).notNull(),
+    precoUnitario: text('preco_unitario').notNull(),
+    desconto: text('desconto').notNull().default('0'),
+    subtotal: text('subtotal').notNull(),
 });
 
 export const itensVendaRelations = relations(itensVenda, ({ one }) => ({
@@ -147,16 +141,16 @@ export const itensVendaRelations = relations(itensVenda, ({ one }) => ({
 }));
 
 // ==================== CONTAS A PAGAR ====================
-export const contasPagar = pgTable('contas_pagar', {
-    id: serial('id').primaryKey(),
-    descricao: varchar('descricao', { length: 255 }).notNull(),
-    valor: decimal('valor', { precision: 10, scale: 2 }).notNull(),
-    dataVencimento: date('data_vencimento').notNull(),
-    dataPagamento: date('data_pagamento'),
-    status: contaStatusEnum('status').notNull().default('pendente'),
+export const contasPagar = sqliteTable('contas_pagar', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    descricao: text('descricao').notNull(),
+    valor: text('valor').notNull(),
+    dataVencimento: text('data_vencimento').notNull(),
+    dataPagamento: text('data_pagamento'),
+    status: text('status', { enum: ['pendente', 'pago', 'atrasado', 'cancelado'] }).notNull().default('pendente'),
     fornecedorId: integer('fornecedor_id').references(() => fornecedores.id),
-    categoria: varchar('categoria', { length: 100 }),
-    criadoEm: timestamp('criado_em').notNull().defaultNow(),
+    categoria: text('categoria'),
+    criadoEm: integer('criado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
 export const contasPagarRelations = relations(contasPagar, ({ one }) => ({
@@ -167,15 +161,15 @@ export const contasPagarRelations = relations(contasPagar, ({ one }) => ({
 }));
 
 // ==================== CONTAS A RECEBER ====================
-export const contasReceber = pgTable('contas_receber', {
-    id: serial('id').primaryKey(),
+export const contasReceber = sqliteTable('contas_receber', {
+    id: integer('id').primaryKey({ autoIncrement: true }),
     clienteId: integer('cliente_id').references(() => clientes.id),
     vendaId: integer('venda_id').references(() => vendas.id),
-    valor: decimal('valor', { precision: 10, scale: 2 }).notNull(),
-    dataVencimento: date('data_vencimento').notNull(),
-    dataRecebimento: date('data_recebimento'),
-    status: contaStatusEnum('status').notNull().default('pendente'),
-    criadoEm: timestamp('criado_em').notNull().defaultNow(),
+    valor: text('valor').notNull(),
+    dataVencimento: text('data_vencimento').notNull(),
+    dataRecebimento: text('data_recebimento'),
+    status: text('status', { enum: ['pendente', 'pago', 'atrasado', 'cancelado'] }).notNull().default('pendente'),
+    criadoEm: integer('criado_em', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
 });
 
 export const contasReceberRelations = relations(contasReceber, ({ one }) => ({

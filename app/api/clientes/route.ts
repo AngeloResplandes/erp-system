@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { clientes } from '@/db/schema';
-import { eq, desc, ilike, or } from 'drizzle-orm';
+import { eq, desc, like, or } from 'drizzle-orm';
 import { clienteSchema } from '@/lib/validations';
 
 // GET - List all clients with optional search
@@ -14,7 +14,7 @@ export async function GET(request: Request) {
         const offset = (page - 1) * limit;
 
         const data = await db.query.clientes.findMany({
-            where: search ? or(ilike(clientes.nome, `%${search}%`), ilike(clientes.email, `%${search}%`)) : undefined,
+            where: search ? or(like(clientes.nome, `%${search}%`), like(clientes.email, `%${search}%`)) : undefined,
             orderBy: desc(clientes.criadoEm),
             limit,
             offset,

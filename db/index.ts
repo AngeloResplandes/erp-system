@@ -1,12 +1,10 @@
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+import { drizzle } from 'drizzle-orm/libsql';
+import { createClient } from '@libsql/client';
 import * as schema from './schema';
 
-const connectionString = process.env.DATABASE_URL!;
+const client = createClient({
+    url: process.env.TURSO_DATABASE_URL!,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
-// For query purposes
-const queryClient = postgres(connectionString);
-export const db = drizzle(queryClient, { schema });
-
-// For migrations (uses a different client configuration)
-export const migrationClient = postgres(connectionString, { max: 1 });
+export const db = drizzle(client, { schema });
