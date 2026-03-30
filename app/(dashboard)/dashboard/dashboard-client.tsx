@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -20,7 +20,28 @@ import {
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-type DbStatus = 'loading' | 'connected' | 'error';
+// Instância criada uma única vez no nível do módulo (evita recriar a cada render)
+const currencyFormatter = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+});
+
+function formatCurrency(value: number): string {
+    return currencyFormatter.format(value);
+}
+
+// Mapa de formas de pagamento hoistado fora do componente
+const paymentMethodMap: Record<string, string> = {
+    dinheiro: 'Dinheiro',
+    pix: 'PIX',
+    cartao_credito: 'Cartão de Crédito',
+    cartao_debito: 'Cartão de Débito',
+    boleto: 'Boleto',
+};
+
+function formatPaymentMethod(method: string | null): string {
+    return paymentMethodMap[method || ''] || method || '-';
+}
 
 interface DashboardStats {
     clientes: { total: number };
@@ -60,67 +81,38 @@ interface VendaPorPagamento {
     total: string;
 }
 
-function formatCurrency(value: number): string {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(value);
-}
-
-function formatPaymentMethod(method: string | null): string {
-    const methods: Record<string, string> = {
-        dinheiro: 'Dinheiro',
-        pix: 'PIX',
-        cartao_credito: 'Cartão de Crédito',
-        cartao_debito: 'Cartão de Débito',
-        boleto: 'Boleto',
-    };
-    return methods[method || ''] || method || '-';
+interface DashboardData {
+    stats: DashboardStats;
+    vendasRecentes: VendaRecente[];
+    produtosMaisVendidos: ProdutoMaisVendido[];
+    vendasPorPagamento: VendaPorPagamento[];
 }
 
 export default function DashboardClientPage() {
-    const { user, isLoading } = useAuth();
-    const [dbStatus, setDbStatus] = useState<DbStatus>('loading');
-    const [stats, setStats] = useState<DashboardStats | null>(null);
-    const [vendasRecentes, setVendasRecentes] = useState<VendaRecente[]>([]);
-    const [produtosMaisVendidos, setProdutosMaisVendidos] = useState<ProdutoMaisVendido[]>([]);
-    const [vendasPorPagamento, setVendasPorPagamento] = useState<VendaPorPagamento[]>([]);
-    const [loadingStats, setLoadingStats] = useState(true);
+    const { user, isLoading: authLoading } = useAuth();
 
-    useEffect(() => {
-        const checkDatabase = async () => {
-            try {
-                const response = await fetch('/api/health');
-                const data = await response.json();
-                setDbStatus(data.status === 'connected' ? 'connected' : 'error');
-            } catch {
-                setDbStatus('error');
-            }
-        };
-        checkDatabase();
-    }, []);
+    const { data, isLoading: loadingStats } = useQuery<DashboardData>({
+        queryKey: ['dashboard'],
+        queryFn: async () => {
+            const res = await fetch('/api/dashboard');
+            if (!res.ok) throw new Error('Erro ao buscar dados do dashboard');
+            return res.json();
+        },
+        staleTime: 60_000, // 1 minuto de cache
+    });
 
-    useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                const response = await fetch('/api/dashboard');
-                if (response.ok) {
-                    const data = await response.json();
-                    setStats(data.stats);
-                    setVendasRecentes(data.vendasRecentes || []);
-                    setProdutosMaisVendidos(data.produtosMaisVendidos || []);
-                    setVendasPorPagamento(data.vendasPorPagamento || []);
-                }
-            } catch (error) {
-                console.error('Erro ao buscar dados do dashboard:', error);
-            } finally {
-                setLoadingStats(false);
-            }
-        };
-        fetchDashboardData();
-    }, []);
+    const stats = data?.stats ?? null;
+    const vendasRecentes = data?.vendasRecentes ?? [];
+    const produtosMaisVendidos = data?.produtosMaisVendidos ?? [];
+    const vendasPorPagamento = data?.vendasPorPagamento ?? [];
 
-    if (isLoading) {
+    // Calculado durante o render, sem spread que pode causar stack overflow
+    const maxVendido = produtosMaisVendidos.reduce(
+        (max, p) => Math.max(max, p.totalVendido),
+        1
+    );
+
+    if (authLoading) {
         return (
             <div className="space-y-6">
                 <Skeleton className="h-8 w-64" />
@@ -132,10 +124,6 @@ export default function DashboardClientPage() {
             </div>
         );
     }
-
-    const maxVendido = produtosMaisVendidos.length > 0
-        ? Math.max(...produtosMaisVendidos.map(p => p.totalVendido))
-        : 1;
 
     return (
         <div className="space-y-6">
@@ -246,8 +234,6 @@ export default function DashboardClientPage() {
                 </Card>
             </div>
 
-
-
             {/* Segunda linha de cards detalhados */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {/* Vendas Recentes */}
@@ -333,23 +319,16 @@ export default function DashboardClientPage() {
                     </CardHeader>
                     <CardContent className="pt-0">
                         <div className="space-y-3">
-                            {/* Status do banco */}
-                            {dbStatus === 'loading' && (
+                            {/* Status da conexão — derivado do próprio estado da query */}
+                            {loadingStats ? (
                                 <div className="flex items-center gap-2 text-sm">
                                     <Skeleton className="h-4 w-4 rounded-full" />
                                     <span className="text-muted-foreground">Verificando conexão...</span>
                                 </div>
-                            )}
-                            {dbStatus === 'connected' && (
+                            ) : (
                                 <div className="flex items-center gap-2 text-sm p-2 rounded-lg bg-green-500/10">
                                     <CheckCircle className="h-4 w-4 text-green-500" />
                                     <span>Sistema funcionando normalmente</span>
-                                </div>
-                            )}
-                            {dbStatus === 'error' && (
-                                <div className="flex items-center gap-2 text-sm p-2 rounded-lg bg-red-500/10">
-                                    <AlertTriangle className="h-4 w-4 text-red-500" />
-                                    <span className="text-red-500">Erro de conexão com o banco</span>
                                 </div>
                             )}
 
